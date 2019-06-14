@@ -28,6 +28,7 @@ public class ApplicationContext implements Context {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void startup() {
+		System.err.println("=============================ApplicationContext startup==============================");
 		List<Class<? extends Context>> classes = new ArrayList<>();
 		try {
 			ReflectionUtils.getClassListFromExternal().forEach(cls -> {
@@ -66,6 +67,7 @@ public class ApplicationContext implements Context {
 		}).forEach((Context) -> {
 			loading(Context);
 		});
+		System.err.println("=============================ApplicationContext started==============================");
 	}
 
 	private void loading(Class<?> contextClass) {
