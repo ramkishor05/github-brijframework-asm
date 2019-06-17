@@ -2,26 +2,26 @@ package org.brijframework.asm.context;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
-import org.brijframework.context.ContainerContext;
 import org.brijframework.context.Context;
+import org.brijframework.context.ModuleContext;
 import org.brijframework.support.model.Assignable;
+import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
-public abstract class DefaultContainerContext implements ContainerContext {
+public abstract class AbstractModuleContext implements ModuleContext {
 
 	private ConcurrentHashMap<Object, Container> cache = new ConcurrentHashMap<Object, Container>();
 
 	private Context context;
 	
-	private Set<Class<? extends Container>> classList = new HashSet<>();
+	private LinkedHashSet<Class<? extends Container>> classList = new LinkedHashSet<>();
 	
 	private Properties properties;
 
@@ -46,6 +46,20 @@ public abstract class DefaultContainerContext implements ContainerContext {
 	@Override
 	public ConcurrentHashMap<Object, Container> getContainers() {
 		return cache;
+	}
+	
+	@Override
+	public void startup() {
+		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
+			loadContainer(container);
+		});
+	}
+	
+	@Override
+	public void destory() {
+		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
+			destoryContainer(container);
+		});
 	}
 	
 	protected void loadContainer(Class<? extends Container>cls) {
@@ -94,7 +108,7 @@ public abstract class DefaultContainerContext implements ContainerContext {
 		
 	}
 	
-	protected Set<Class<? extends Container>> getClassList(){
+	protected LinkedHashSet<Class<? extends Container>> getClassList(){
 		return classList;
 	}
 	

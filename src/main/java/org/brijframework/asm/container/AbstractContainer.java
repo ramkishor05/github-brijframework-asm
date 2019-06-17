@@ -2,9 +2,7 @@ package org.brijframework.asm.container;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
@@ -20,7 +18,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 	
 	private Context context;
 	
-	private Set<Class<? extends Factory>> classList = new HashSet<>();
+	private LinkedHashSet<Class<? extends Factory>> classList = new LinkedHashSet<>();
 	
 	private ConcurrentHashMap<Object, Group> cache = new ConcurrentHashMap<>();
 
@@ -40,7 +38,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 	}
 	
 	@Override
-	public Collection<Class<? extends Factory>> getClassList(){
+	public LinkedHashSet<Class<? extends Factory>> getClassList(){
 		return classList;
 	}
 	
@@ -80,7 +78,8 @@ public abstract class AbstractContainer implements DefaultContainer {
 	@Override
 	public Container loadContainer() {
 		SupportUtil.getDepandOnSortedClassFactoryList(getClassList()).forEach((metaFactory) -> {
-			loadFactory((Class<? extends Factory>)metaFactory);
+			System.out.println(metaFactory);
+			/*loadFactory((Class<? extends Factory>)metaFactory);*/
 		});
 		return this;
 	}

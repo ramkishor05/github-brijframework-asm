@@ -3,9 +3,8 @@ package org.brijframework.asm.context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
@@ -16,11 +15,11 @@ import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
-public abstract class DefaultBootstrapContext implements BootstrapContext {
+public abstract class AbstractBootstrapContext implements BootstrapContext {
 
 	private ConcurrentHashMap<Object, Context> cache = new ConcurrentHashMap<Object, Context>();
 
-	private Set<Class<? extends Context>> classList = new HashSet<>();
+	private LinkedHashSet<Class<? extends Context>> classList = new LinkedHashSet<>();
 
 	private Context context;
 	
@@ -93,7 +92,7 @@ public abstract class DefaultBootstrapContext implements BootstrapContext {
 		return cache;
 	}
 	
-	protected Set<Class<? extends Context>> getClassList(){
+	protected LinkedHashSet<Class<? extends Context>> getClassList(){
 		return classList;
 	}
 	
