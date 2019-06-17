@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.brijframework.container.Container;
+import org.brijframework.context.Context;
 import org.brijframework.group.Group;
 import org.brijframework.util.asserts.AssertMessage;
 import org.brijframework.util.asserts.Assertion;
@@ -137,4 +138,6 @@ public interface DefaultContainer extends Container{
 		this.getCache().clear();
 		return this;
 	}
+
+	void setContext(Context context);
 }
