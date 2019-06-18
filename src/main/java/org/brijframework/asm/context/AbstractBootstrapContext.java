@@ -71,7 +71,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		}
 	}
 	
-	protected void destoryContainer(Class<? extends Container> clas) {
+	protected void destoryContext(Class<? extends Context> clas) {
 		if(clas.isInterface() || clas.getModifiers() == Modifier.ABSTRACT) {
 			return ;
 		}
@@ -105,7 +105,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		Assertion.notNull(context, "Context should not be null.");
 		context.initialize(this);
 		context.init();
-		getContexts().put(context.getClass().getSimpleName(),context);
+		getContexts().put(context.getClass().getName(),context);
 	}
 
 }

@@ -102,10 +102,9 @@ public abstract class AbstractModuleContext implements ModuleContext {
 		}
 		System.err.println("Destorying Container    : "+cls.getName());
 		Container container=getContainers().remove(cls.getName());
+		System.err.println("Destoryed Container     : "+container);
 		container.clearContainer();
 		System.gc();
-		System.err.println("Destoryed Container    : "+container);
-		
 	}
 	
 	protected LinkedHashSet<Class<? extends Container>> getClassList(){
