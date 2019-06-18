@@ -78,8 +78,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 	@Override
 	public Container loadContainer() {
 		SupportUtil.getDepandOnSortedClassFactoryList(getClassList()).forEach((metaFactory) -> {
-			System.out.println(metaFactory);
-			/*loadFactory((Class<? extends Factory>)metaFactory);*/
+			loadFactory((Class<? extends Factory>)metaFactory);
 		});
 		return this;
 	}
