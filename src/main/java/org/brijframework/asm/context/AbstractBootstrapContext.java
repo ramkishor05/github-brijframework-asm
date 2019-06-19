@@ -7,10 +7,10 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.brijframework.container.Container;
 import org.brijframework.context.BootstrapContext;
 import org.brijframework.context.Context;
 import org.brijframework.support.model.Assignable;
+import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
@@ -47,6 +47,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 			}
 		}
 		if (assignable!=null) {
+			System.err.println("---------------------------------------------------------------------");
 			System.err.println("Context       : " + contextClass.getName());
 			try {
 				Context context = (Context) assignable.invoke(null);
@@ -57,6 +58,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 				e.printStackTrace();
 			}
 		}else if(InstanceUtil.isAssignable(contextClass)){
+			System.err.println("---------------------------------------------------------------------");
 			System.err.println("Context       : " + contextClass.getName());
 			try {
 				Context context = InstanceUtil.getInstance(contextClass);
@@ -93,12 +95,12 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 	}
 	
 	protected LinkedHashSet<Class<? extends Context>> getClassList(){
-		return classList;
+		return SupportUtil.getDepandOnSortedClassList(classList);
 	}
 	
 	protected void register(Class<? extends Context> context) {
 		Assertion.notNull(context, "Context class should not be null.");
-		getClassList().add(context);
+		classList.add(context);
 	}
 	
 	protected void register(Context context) {
