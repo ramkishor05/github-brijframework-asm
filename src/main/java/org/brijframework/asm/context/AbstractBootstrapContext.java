@@ -13,7 +13,6 @@ import org.brijframework.support.model.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
-import org.brijframework.util.reflect.MethodUtil;
 
 public abstract class AbstractBootstrapContext implements BootstrapContext {
 
@@ -41,8 +40,8 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 
 	public void loadContext(Class<? extends Context> contextClass) {
 		Method assignable=null;
-		for (Method method : MethodUtil.getAllMethod(contextClass)) {
-			if (method.isAnnotationPresent(Assignable.class)) {
+		for (Method method : contextClass.getMethods()) {
+			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
 				assignable=method;
 			}
 		}
@@ -73,12 +72,12 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		}
 	}
 	
-	protected void destoryContext(Class<? extends Context> clas) {
-		if(clas.isInterface() || clas.getModifiers() == Modifier.ABSTRACT) {
+	protected void destoryContext(Class<? extends Context> contextClass) {
+		if(!InstanceUtil.isAssignable(contextClass)) {
 			return ;
 		}
-		System.err.println("Context Destorying     : "+clas.getName());
-		Context context=getContexts().remove(clas.getName());
+		System.err.println("Context Destorying     : "+contextClass.getName());
+		Context context=getContexts().remove(contextClass.getName());
 		context=null;
 		System.gc();
 		System.err.println("Destoryed Container    : "+context);

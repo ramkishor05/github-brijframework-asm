@@ -2,6 +2,7 @@ package org.brijframework.asm.container;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +13,6 @@ import org.brijframework.group.Group;
 import org.brijframework.support.model.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.reflect.MethodUtil;
 
 public abstract class AbstractContainer implements DefaultContainer {
 	
@@ -48,27 +48,23 @@ public abstract class AbstractContainer implements DefaultContainer {
 	}
 	
 	protected void loadFactory(Class<? extends Factory> cls) {
-		boolean called = false;
-		for (Method method : MethodUtil.getAllMethod(cls)) {
-			if (method.isAnnotationPresent(Assignable.class)) {
+		Method target=null;
+		for (Method method : cls.getMethods()) {
+			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class) && cls.isAssignableFrom(method.getReturnType())  ) {
 				try {
-					System.err.println("Factory      : " + cls.getName());
-					Factory factory = (Factory) method.invoke(null);
-					factory.setContainer(this);
-					factory.loadFactory();
-					called = true;
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					target=method;
+				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		if (!called) {
+		if (target!=null) {
 			try {
 				System.err.println("Factory      : " + cls.getName());
-				Factory factory  = (Factory) cls.newInstance();
+				Factory factory = (Factory)target.invoke(null);
 				factory.setContainer(this);
 				factory.loadFactory();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
@@ -79,7 +75,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 	public Container loadContainer() {
 		System.err.println("--------------------------------------Container-------------------------------------");
 		SupportUtil.getDepandOnSortedClassFactoryList(getClassList()).forEach((metaFactory) -> {
-			loadFactory((Class<? extends Factory>)metaFactory);
+			loadFactory((Class<? extends Factory>)metaFactory); 
 		});
 		return this;
 	}
