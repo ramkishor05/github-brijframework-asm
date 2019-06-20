@@ -51,7 +51,11 @@ public abstract class AbstractModuleContext implements ModuleContext {
 	@Override
 	public void startup() {
 		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
+			System.err.println("---------------------Container------------------");
+			System.err.println(container.getSimpleName());
+			System.err.println("------------------------------------------------");
 			loadContainer(container);
+			
 		});
 	}
 	
@@ -70,7 +74,7 @@ public abstract class AbstractModuleContext implements ModuleContext {
 		for(Method method:MethodUtil.getAllMethod(cls)) {
 			if(method.isAnnotationPresent(Assignable.class)) {
 				try {
-					System.err.println("Container    : "+cls.getName());
+					System.err.println("Container    : "+cls.getSimpleName());
 					Container container=(Container) method.invoke(null);
 					container.setContext(this);
 					container.init();
@@ -84,7 +88,7 @@ public abstract class AbstractModuleContext implements ModuleContext {
 		}
 		if(!called) {
 			try {
-				System.err.println("Container    : "+cls.getName());
+				System.err.println("Container    : "+cls.getSimpleName());
 				Container container=(Container) cls.newInstance();
 				container.setContext(this);
 				container.init();
@@ -100,9 +104,9 @@ public abstract class AbstractModuleContext implements ModuleContext {
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
-		System.err.println("Destorying Container    : "+cls.getName());
+		System.err.println("Destorying Container    : "+cls.getSimpleName());
 		Container container=getContainers().remove(cls.getName());
-		System.err.println("Destoryed Container     : "+container);
+		System.err.println("Destoryed Container     : "+cls.getSimpleName());
 		container.clearContainer();
 		System.gc();
 	}
@@ -112,7 +116,7 @@ public abstract class AbstractModuleContext implements ModuleContext {
 	}
 	
 	protected void register(Class<? extends Container> container) {
-		Assertion.notNull(container, "container class should not be null.");
+		Assertion.notNull(container, "Container should not be null.");
 		getClassList().add(container);
 	}
 	

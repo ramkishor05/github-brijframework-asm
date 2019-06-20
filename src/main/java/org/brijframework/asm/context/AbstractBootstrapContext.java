@@ -47,7 +47,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		}
 		if (assignable!=null) {
 			System.err.println("---------------------------------------------------------------------");
-			System.err.println("Context       : " + contextClass.getName());
+			System.err.println("Context      : " + contextClass.getSimpleName());
 			try {
 				Context context = (Context) assignable.invoke(null);
 				context.getProperties().putAll(this.getProperties());
@@ -58,7 +58,7 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 			}
 		}else if(InstanceUtil.isAssignable(contextClass)){
 			System.err.println("---------------------------------------------------------------------");
-			System.err.println("Context       : " + contextClass.getName());
+			System.err.println("Context      : " + contextClass.getSimpleName());
 			try {
 				Context context = InstanceUtil.getInstance(contextClass);
 				if(context!=null) {
@@ -76,11 +76,11 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		if(!InstanceUtil.isAssignable(contextClass)) {
 			return ;
 		}
-		System.err.println("Context Destorying     : "+contextClass.getName());
+		System.err.println("Context Destorying  : "+contextClass.getSimpleName());
 		Context context=getContexts().remove(contextClass.getName());
 		context=null;
 		System.gc();
-		System.err.println("Destoryed Container    : "+context);
+		System.err.println("Destoryed Container  : "+contextClass.getSimpleName());
 	}
 
 	@Override

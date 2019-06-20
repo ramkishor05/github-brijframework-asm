@@ -60,7 +60,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 		}
 		if (target!=null) {
 			try {
-				System.err.println("Factory      : " + cls.getName());
+				System.err.println("Factory      : " + cls.getSimpleName());
 				Factory factory = (Factory)target.invoke(null);
 				factory.setContainer(this);
 				factory.loadFactory();
@@ -73,7 +73,6 @@ public abstract class AbstractContainer implements DefaultContainer {
 
 	@Override
 	public Container loadContainer() {
-		System.err.println("--------------------------------------Container-------------------------------------");
 		SupportUtil.getDepandOnSortedClassFactoryList(getClassList()).forEach((metaFactory) -> {
 			loadFactory((Class<? extends Factory>)metaFactory); 
 		});
