@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.context.BootstrapContext;
@@ -14,31 +13,21 @@ import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
 
-public abstract class AbstractBootstrapContext implements BootstrapContext {
+public abstract class AbstractBootstrapContext extends AbstractContext implements BootstrapContext {
 
 	private ConcurrentHashMap<Object, Context> cache = new ConcurrentHashMap<Object, Context>();
 
-	private LinkedHashSet<Class<? extends Context>> classList = new LinkedHashSet<>();
-
-	private Context context;
+	private LinkedHashSet<Class<? extends Context>> classList;
 	
-	private Properties properties;
-
-	@Override
-	public Properties getProperties() {
-		if(properties==null) {
-			properties=new Properties();
+	protected void loadContext(Class<? extends Context> contextClass) {
+		if(contextClass==null) {
+			System.err.println("Context should not be null.");
+			return;
 		}
-		return properties;
-	}
-
-
-	@Override
-	public void initialize(Context context) {
-		this.context = context;
-	}
-
-	public void loadContext(Class<? extends Context> contextClass) {
+		if(this.isLoadContext()) {
+			System.err.println("Context already loaded.");
+			return;
+		}
 		Method assignable=null;
 		for (Method method : contextClass.getMethods()) {
 			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
@@ -77,29 +66,61 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 			return ;
 		}
 		System.err.println("Context Destorying  : "+contextClass.getSimpleName());
-		Context context=getContexts().remove(contextClass.getName());
-		context=null;
+		getContexts().remove(contextClass.getName());
 		System.gc();
 		System.err.println("Destoryed Container  : "+contextClass.getSimpleName());
 	}
-
+	
 	@Override
-	public Context getParent() {
-		return context;
+	public void startup() {
+		if(this.isStarted()) {
+			System.err.println("Context already started.");
+			return;
+		}
+		if(getRegisteredList()==null || getRegisteredList().isEmpty()) {
+			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			return;
+		}
+		getRegisteredList().forEach((Context) ->{ loadContext(Context);});
+		this.setStarted(true);
+	}
+	
+	@Override
+	public void destory() {
+		if(this.isStarted()) {
+			System.err.println("Context already stoped.");
+			return;
+		}
+		if(getRegisteredList()==null || getRegisteredList().isEmpty()) {
+			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			return;
+		}
+		getRegisteredList().forEach((Context) ->{ destoryContext(Context);});
+		this.setStoped(true);
 	}
 
 	@Override
 	public ConcurrentHashMap<Object, Context> getContexts() {
-		return cache;
+		if(this.cache==null) {
+			this.cache = new ConcurrentHashMap<Object, Context>();
+		}
+		return this.cache;
 	}
 	
-	protected LinkedHashSet<Class<? extends Context>> getClassList(){
+	protected LinkedHashSet<Class<? extends Context>> getRegisteredList(){
 		return SupportUtil.getDepandOnSortedClassList(classList);
+	}
+	
+	public LinkedHashSet<Class<? extends Context>> getClassList() {
+		if(classList==null) {
+			classList=new LinkedHashSet<>();
+		}
+		return classList;
 	}
 	
 	protected void register(Class<? extends Context> context) {
 		Assertion.notNull(context, "Context class should not be null.");
-		classList.add(context);
+		getClassList().add(context);
 	}
 	
 	protected void register(Context context) {
@@ -108,5 +129,4 @@ public abstract class AbstractBootstrapContext implements BootstrapContext {
 		context.init();
 		getContexts().put(context.getClass().getName(),context);
 	}
-
 }

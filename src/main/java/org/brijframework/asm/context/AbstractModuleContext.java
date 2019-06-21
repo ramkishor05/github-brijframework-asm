@@ -15,7 +15,7 @@ import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
-public abstract class AbstractModuleContext implements ModuleContext {
+public abstract class AbstractModuleContext extends AbstractContext implements ModuleContext {
 
 	private ConcurrentHashMap<Object, Container> cache = new ConcurrentHashMap<Object, Container>();
 
@@ -50,17 +50,32 @@ public abstract class AbstractModuleContext implements ModuleContext {
 	
 	@Override
 	public void startup() {
+		if(this.isStarted()) {
+			System.err.println("Context already started.");
+			return;
+		}
+		if(getClassList()==null || getClassList().isEmpty()) {
+			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			return;
+		}
 		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
 			System.err.println("---------------------Container------------------");
 			System.err.println(container.getSimpleName());
 			System.err.println("------------------------------------------------");
 			loadContainer(container);
-			
 		});
 	}
 	
 	@Override
 	public void destory() {
+		if(this.isStarted()) {
+			System.err.println("Context already stoped.");
+			return;
+		}
+		if(getClassList()==null || getClassList().isEmpty()) {
+			System.err.println("Container register should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			return;
+		}
 		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
 			destoryContainer(container);
 		});
