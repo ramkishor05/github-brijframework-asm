@@ -60,5 +60,12 @@ public abstract class AbstractContext implements Context{
 		return this.loadContext;
 	}
 	
+	public void setProperty(String key, String value) {
+		getProperties().setProperty(key, value);
+	}
+	
+	public String getProperty(String key) {
+		return getProperties().getProperty(key);
+	}
 
 }
