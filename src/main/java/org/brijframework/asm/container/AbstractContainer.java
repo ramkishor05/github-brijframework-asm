@@ -10,7 +10,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.factories.Factory;
 import org.brijframework.group.Group;
-import org.brijframework.support.model.Assignable;
+import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 
