@@ -49,10 +49,16 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	}
 	
 	@Override
-	public void startup() {
+	public void start() {
 		if(this.isStarted()) {
 			System.err.println("Context already started.");
 			return;
+		}
+		if(!this.isInit()) {
+			this.init();
+		}
+		if(!this.isConfigred()) {
+			this.load();
 		}
 		if(getClassList()==null || getClassList().isEmpty()) {
 			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());

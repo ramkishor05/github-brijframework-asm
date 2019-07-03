@@ -41,7 +41,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 				Context context = (Context) assignable.invoke(null);
 				context.getProperties().putAll(this.getProperties());
 				register(context);
-				context.startup();
+				context.start();
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
@@ -53,7 +53,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 				if(context!=null) {
 					context.getProperties().putAll(this.getProperties());
 					register(context);
-					context.startup();
+					context.start();
 				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
@@ -72,7 +72,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 	}
 	
 	@Override
-	public void startup() {
+	public void start() {
 		if(this.isStarted()) {
 			System.err.println("Context already started.");
 			return;

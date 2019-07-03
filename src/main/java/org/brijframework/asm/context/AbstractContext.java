@@ -15,6 +15,18 @@ public abstract class AbstractContext implements Context{
 	private boolean isStoped;
 	
 	private boolean loadContext;
+	
+	private boolean init;
+
+	private boolean configred;
+	
+	public  boolean isInit() {
+		return init;
+	}
+	
+	public void setInit(boolean init) {
+		this.init = init;
+	}
 
 	@Override
 	public Properties getProperties() {
@@ -68,4 +80,15 @@ public abstract class AbstractContext implements Context{
 		return getProperties().getProperty(key);
 	}
 
+	public boolean isConfigred() {
+		return configred;
+	}
+	
+	public void setConfigred(boolean configred) {
+		this.configred = configred;
+	}
+
+	protected void load() {
+		
+	}
 }

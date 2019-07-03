@@ -43,7 +43,7 @@ public abstract class AbstractFactory<K,T> implements Factory {
 	
 	protected abstract void postregister(K key, T value);
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "hiding" })
 	public <T>T getProperty(String key){
 		return (T) getContainer().getContext().getProperties().get(key);
 	}
