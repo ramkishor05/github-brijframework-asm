@@ -73,7 +73,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	}
 	
 	@Override
-	public void destory() {
+	public void stop() {
 		if(this.isStarted()) {
 			System.err.println("Context already stoped.");
 			return;

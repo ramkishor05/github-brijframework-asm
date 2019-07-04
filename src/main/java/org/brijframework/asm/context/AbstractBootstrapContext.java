@@ -86,7 +86,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 	}
 	
 	@Override
-	public void destory() {
+	public void stop() {
 		if(this.isStarted()) {
 			System.err.println("Context already stoped.");
 			return;
