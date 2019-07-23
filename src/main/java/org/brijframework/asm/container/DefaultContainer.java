@@ -59,9 +59,9 @@ public interface DefaultContainer extends Container{
 	@Override
 	public default <T> T add(Object groupKey, Object dataKey, T object) {
 		Assertion.notNull(groupKey,AssertMessage.arg_null_or_empty_message+" -> groupKey");
-		Assertion.notNull(dataKey,AssertMessage.arg_null_or_empty_message+" -> dataKey");
+		Group group=load(groupKey);
 		Assertion.isTrue(getCache().get(groupKey) == null,AssertMessage.key_not_contains+" "+groupKey);
-		return getCache().get(groupKey).add(dataKey,object);
+		return group.add(dataKey,object);
 	}
 
 	@Override
