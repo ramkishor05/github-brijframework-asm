@@ -1,4 +1,4 @@
-package org.brijframework.asm.context;
+package org.brijframework.context.impl;
 
 import java.util.Properties;
 

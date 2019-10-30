@@ -11,6 +11,23 @@
 	<name>org.brijframework-asm</name>
 	<url>http://maven.apache.org</url>
 
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Pivotal</name>
+			<email>info@pivotal.io</email>
+			<organization>Pivotal Software, Inc.</organization>
+			<organizationUrl>https://www.spring.io</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<url>https://github.com/ramkishor05/brijframework-api</url>
+	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -40,4 +57,36 @@
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+	    <repository>
+	        <id>mvn-repo</id>
+	        <url>https://rawgit.com/ramkishor05/artifacts/master</url>
+	        <releases>
+	            <enabled>true</enabled>
+	        </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.12</version>
+				<configuration>
+					<message>Creating site for ${project.version}</message>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

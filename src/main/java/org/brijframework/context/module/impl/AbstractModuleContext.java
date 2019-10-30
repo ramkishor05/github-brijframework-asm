@@ -1,4 +1,4 @@
-package org.brijframework.asm.context;
+package org.brijframework.context.module.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.context.ModuleContext;
+import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;

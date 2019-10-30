@@ -1,4 +1,4 @@
-package org.brijframework.asm.group;
+package org.brijframework.group.impl;
 
 import java.util.Map.Entry;
 import java.util.Set;

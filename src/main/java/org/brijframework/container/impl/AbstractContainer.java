@@ -1,4 +1,4 @@
-package org.brijframework.asm.container;
+package org.brijframework.container.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package org.brijframework.asm.resources;
+package org.brijframework.resources.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;

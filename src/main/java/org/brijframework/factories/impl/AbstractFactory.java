@@ -1,4 +1,4 @@
-package org.brijframework.asm.factories;
+package org.brijframework.factories.impl;
 
 import java.util.concurrent.ConcurrentHashMap;
 
