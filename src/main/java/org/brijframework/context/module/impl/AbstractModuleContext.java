@@ -1,15 +1,14 @@
 package org.brijframework.context.module.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.context.ModuleContext;
 import org.brijframework.context.impl.AbstractContext;
+import org.brijframework.context.impl.Stages;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
@@ -24,16 +23,6 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	
 	private LinkedHashSet<Class<? extends Container>> classList = new LinkedHashSet<>();
 	
-	private Properties properties;
-
-	@Override
-	public Properties getProperties() {
-		if(properties==null) {
-			properties=new Properties();
-		}
-		return properties;
-	}
-
 	@Override
 	public void initialize(Context context) {
 		this.context = context;
@@ -51,20 +40,26 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	
 	@Override
 	public void start() {
-		if(this.isStarted()) {
-			System.err.println("Context already started.");
-			return;
-		}
-		if(!this.isInit()) {
+		Stages stages = getStages();
+		switch (stages) {
+		case INIT:
 			this.init();
-		}
-		if(!this.isConfigred()) {
+			this.setStages(Stages.LOAD);
+		case LOAD:
 			this.load();
+			this.setStages(Stages.READY);
+		case READY:
+			this.ready();
+			this.setStages(Stages.START);
+			break;
+		case START:
+			System.err.println("Context already started.");
+		default:
+			break;
 		}
-		if(getClassList()==null || getClassList().isEmpty()) {
-			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
-			return;
-		}
+	}
+	
+	private void ready() {
 		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
 			System.err.println("---------------------Container------------------");
 			System.err.println(container.getSimpleName());
@@ -72,10 +67,10 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 			loadContainer(container);
 		});
 	}
-	
+
 	@Override
 	public void stop() {
-		if(this.isStarted()) {
+		if(Stages.STOPED.equals(getStages())) {
 			System.err.println("Context already stoped.");
 			return;
 		}
@@ -92,8 +87,13 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
-		boolean called=false;
-		for(Method method:MethodUtil.getAllMethod(cls)) {
+		if(!this.invokeFactoryMethod(cls)) {
+			this.invokeInstanceMethod(cls);
+		}
+	}
+
+	private boolean invokeFactoryMethod(Class<? extends Container> cls) {
+		for(Method method :MethodUtil.getAllMethod(cls)) {
 			if(method.isAnnotationPresent(Assignable.class)) {
 				try {
 					System.err.println("Container    : "+cls.getSimpleName());
@@ -102,23 +102,25 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 					container.init();
 					container.loadContainer();
 					getContainers().put(cls.getSimpleName(), container);
-					called=true;
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					return true;
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		if(!called) {
-			try {
-				System.err.println("Container    : "+cls.getSimpleName());
-				Container container=(Container) cls.newInstance();
-				container.setContext(this);
-				container.init();
-				container.loadContainer();
-				getContainers().put(cls.getSimpleName(), container);
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
+		return false;
+	}
+
+	private void invokeInstanceMethod(Class<? extends Container> cls) {
+		try {
+			System.err.println("Container    : "+cls.getSimpleName());
+			Container container = (Container) cls.newInstance();
+			container.setContext(this);
+			container.init();
+			container.loadContainer();
+			getContainers().put(cls.getSimpleName(), container);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -127,13 +129,16 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 			return ;
 		}
 		System.err.println("Destorying Container    : "+cls.getSimpleName());
-		Container container=getContainers().remove(cls.getName());
+		Container container = getContainers().remove(cls.getName());
 		System.err.println("Destoryed Container     : "+cls.getSimpleName());
 		container.clearContainer();
 		System.gc();
 	}
 	
 	protected LinkedHashSet<Class<? extends Container>> getClassList(){
+		if(classList==null) {
+			classList=new LinkedHashSet<>();
+		}
 		return classList;
 	}
 	

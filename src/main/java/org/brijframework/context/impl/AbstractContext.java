@@ -1,39 +1,38 @@
 package org.brijframework.context.impl;
 
-import java.util.Properties;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import org.brijframework.context.Context;
+import org.brijframework.env.Environment;
+import org.brijframework.env.impl.EnvironmentImpl;
+import org.brijframework.support.config.Assignable;
 
 public abstract class AbstractContext implements Context{
 
 	private Context context;
 	
-	private Properties properties;
+	private Environment environment;
 	
-	private boolean isStarted;
+	private Stages stages;
 	
-	private boolean isStoped;
-	
-	private boolean loadContext;
-	
-	private boolean init;
-
-	private boolean configred;
-	
-	public  boolean isInit() {
-		return init;
-	}
-	
-	public void setInit(boolean init) {
-		this.init = init;
-	}
-
-	@Override
-	public Properties getProperties() {
-		if(properties==null) {
-			properties=new Properties();
+	public Stages getStages() {
+		if(stages==null) {
+			stages=Stages.INIT;
 		}
-		return properties;
+		return stages;
+	}
+	
+	protected void setStages(Stages stages) {
+		this.stages = stages;
+	}
+	
+	@Override
+	public Environment getEnvironment() {
+		if(environment==null) {
+			load();
+		}
+		return environment;
 	}
 
 	@Override
@@ -45,50 +44,20 @@ public abstract class AbstractContext implements Context{
 	public void initialize(Context context) {
 		this.context = context;
 	}
-	
-	protected void setStarted(boolean isStarted) {
-		this.isStarted = isStarted;
-	}
-	
-	@Override
-	public boolean isStarted() {
-		return this.isStarted;
-	}
-	
-	protected void setStoped(boolean isStoped) {
-		this.isStoped = isStoped;
-	}
-	
-	@Override
-	public boolean isStoped() {
-		return isStoped;
-	}
-
-	protected void setLoadContext(boolean loadContext) {
-		this.loadContext = loadContext;
-	}
-	
-	public boolean isLoadContext() {
-		return this.loadContext;
-	}
-	
-	public void setProperty(String key, String value) {
-		getProperties().setProperty(key, value);
-	}
-	
-	public String getProperty(String key) {
-		return getProperties().getProperty(key);
-	}
-
-	public boolean isConfigred() {
-		return configred;
-	}
-	
-	public void setConfigred(boolean configred) {
-		this.configred = configred;
-	}
 
 	protected void load() {
-		
+		System.err.println("======================Environment loading..==================================");
+		environment = new EnvironmentImpl();
+		environment.init();
+		System.err.println("======================Environment completed==================================");
+	}
+	
+	protected Method findFactoryMethod(Class<? extends Context> contextClass) {
+		for (Method method : contextClass.getMethods()) {
+			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
+				return method;
+			}
+		}
+		return null;
 	}
 }

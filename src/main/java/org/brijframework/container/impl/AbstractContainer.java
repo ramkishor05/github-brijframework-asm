@@ -48,26 +48,37 @@ public abstract class AbstractContainer implements DefaultContainer {
 	}
 	
 	protected void loadFactory(Class<? extends Factory> cls) {
-		Method target=null;
+		if (cls==null) {
+			return ;
+		}
+		this.invokeFactoryMethod(cls, findFactoryMethod(cls));
+	}
+
+	private void invokeFactoryMethod(Class<? extends Factory> cls, Method target) {
+		if (target==null) {
+			return ;
+		}
+		try {
+			System.err.println("Factory      : " + cls.getSimpleName());
+			Factory factory = (Factory)target.invoke(null);
+			factory.setContainer(this);
+			factory.loadFactory();
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Method findFactoryMethod(Class<? extends Factory> cls) {
 		for (Method method : cls.getMethods()) {
 			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class) && cls.isAssignableFrom(method.getReturnType())  ) {
 				try {
-					target=method;
+					return method;
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		if (target!=null) {
-			try {
-				System.err.println("Factory      : " + cls.getSimpleName());
-				Factory factory = (Factory)target.invoke(null);
-				factory.setContainer(this);
-				factory.loadFactory();
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
+		return null;
 	}
 	
 

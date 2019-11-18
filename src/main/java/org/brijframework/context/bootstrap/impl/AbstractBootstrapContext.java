@@ -2,14 +2,15 @@ package org.brijframework.context.bootstrap.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.context.BootstrapContext;
 import org.brijframework.context.Context;
 import org.brijframework.context.impl.AbstractContext;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.context.impl.Stages;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
@@ -21,26 +22,20 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 	private LinkedHashSet<Class<? extends Context>> classList;
 	
 	protected void loadContext(Class<? extends Context> contextClass) {
+		if(Stages.LOAD.equals(this.getStages())) {
+			System.err.println("Context already loaded.");
+			return;
+		}
 		if(contextClass==null) {
 			System.err.println("Context should not be null.");
 			return;
 		}
-		if(this.isLoadContext()) {
-			System.err.println("Context already loaded.");
-			return;
-		}
-		Method assignable=null;
-		for (Method method : contextClass.getMethods()) {
-			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
-				assignable=method;
-			}
-		}
+		Method assignable= findFactoryMethod(contextClass);
 		if (assignable!=null) {
 			System.err.println("---------------------------------------------------------------------");
 			System.err.println("Context      : " + contextClass.getSimpleName());
 			try {
 				Context context = (Context) assignable.invoke(null);
-				context.getProperties().putAll(this.getProperties());
 				register(context);
 				context.start();
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -52,7 +47,6 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 			try {
 				Context context = InstanceUtil.getInstance(contextClass);
 				if(context!=null) {
-					context.getProperties().putAll(this.getProperties());
 					register(context);
 					context.start();
 				}
@@ -74,7 +68,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 	
 	@Override
 	public void start() {
-		if(this.isStarted()) {
+		if(Stages.START.equals(this.getStages())) {
 			System.err.println("Context already started.");
 			return;
 		}
@@ -83,12 +77,12 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 			return;
 		}
 		getRegisteredList().forEach((Context) ->{ loadContext(Context);});
-		this.setStarted(true);
+		this.setStages(Stages.START);
 	}
 	
 	@Override
 	public void stop() {
-		if(this.isStarted()) {
+		if(Stages.STOPED.equals(this.getStages())) {
 			System.err.println("Context already stoped.");
 			return;
 		}
@@ -97,7 +91,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 			return;
 		}
 		getRegisteredList().forEach((Context) ->{ destoryContext(Context);});
-		this.setStoped(true);
+		this.setStages(Stages.STOPED);
 	}
 
 	@Override
@@ -130,4 +124,19 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 		context.init();
 		getContexts().put(context.getClass().getName(),context);
 	}
+	
+	public Context getContext(String key) {
+		return cache.get(key);
+	}
+	
+	public List<Context> getContexts(Class<? extends Context> contextClass) {
+		List<Context> contexts=new ArrayList<>();
+		for(Context context:cache.values()) {
+			if(contextClass.isAssignableFrom(context.getClass())) {
+				contexts.add(context);
+			}
+		}
+		return contexts;
+	}
+	
 }
