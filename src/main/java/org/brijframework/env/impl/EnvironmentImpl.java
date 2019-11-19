@@ -24,7 +24,6 @@ public class EnvironmentImpl extends Properties implements Environment {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
 
 	public EnvironmentImpl() {
 		setProperties(System.getProperties());

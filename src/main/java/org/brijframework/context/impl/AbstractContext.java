@@ -3,6 +3,7 @@ package org.brijframework.context.impl;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.env.Environment;
 import org.brijframework.env.impl.EnvironmentImpl;
@@ -52,7 +53,7 @@ public abstract class AbstractContext implements Context{
 		System.err.println("======================Environment completed==================================");
 	}
 	
-	protected Method findFactoryMethod(Class<? extends Context> contextClass) {
+	protected Method findFactoryMethod(Class<? extends Container> contextClass) {
 		for (Method method : contextClass.getMethods()) {
 			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
 				return method;

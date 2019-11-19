@@ -44,6 +44,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 	
 	protected void register(Class<? extends Factory> container) {
 		Assertion.notNull(container, "Factory class should not be null.");
+		System.out.println("Factory registry : "+container);
 		getClassList().add(container);
 	}
 	
@@ -84,7 +85,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 
 	@Override
 	public Container loadContainer() {
-		SupportUtil.getDepandOnSortedClassFactoryList(getClassList()).forEach((metaFactory) -> {
+		SupportUtil.getDepandOnSortedFactoryList(getClassList()).forEach((metaFactory) -> {
 			loadFactory((Class<? extends Factory>)metaFactory); 
 		});
 		return this;

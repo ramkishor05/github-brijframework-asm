@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
+import org.brijframework.container.ModuleContainer;
 import org.brijframework.context.Context;
 import org.brijframework.context.ModuleContext;
 import org.brijframework.context.impl.AbstractContext;
@@ -17,11 +18,11 @@ import org.brijframework.util.reflect.MethodUtil;
 
 public abstract class AbstractModuleContext extends AbstractContext implements ModuleContext {
 
-	private ConcurrentHashMap<Object, Container> cache = new ConcurrentHashMap<Object, Container>();
+	private ConcurrentHashMap<Object, ModuleContainer> cache = new ConcurrentHashMap<Object, ModuleContainer>();
 
 	private Context context;
 	
-	private LinkedHashSet<Class<? extends Container>> classList = new LinkedHashSet<>();
+	private LinkedHashSet<Class<? extends ModuleContainer>> classList = new LinkedHashSet<>();
 	
 	@Override
 	public void initialize(Context context) {
@@ -34,7 +35,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	}
 
 	@Override
-	public ConcurrentHashMap<Object, Container> getContainers() {
+	public ConcurrentHashMap<Object, ModuleContainer> getContainers() {
 		return cache;
 	}
 	
@@ -44,14 +45,13 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		switch (stages) {
 		case INIT:
 			this.init();
-			this.setStages(Stages.LOAD);
+			//this.setStages(Stages.LOAD);
 		case LOAD:
 			this.load();
-			this.setStages(Stages.READY);
+			//this.setStages(Stages.READY);
 		case READY:
 			this.ready();
-			this.setStages(Stages.START);
-			break;
+			//this.setStages(Stages.START);
 		case START:
 			System.err.println("Context already started.");
 		default:
@@ -60,7 +60,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	}
 	
 	private void ready() {
-		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
+		SupportUtil.getDepandOnSortedModuleContainerList(getClassList()).forEach((container) -> {
 			System.err.println("---------------------Container------------------");
 			System.err.println(container.getSimpleName());
 			System.err.println("------------------------------------------------");
@@ -78,12 +78,12 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 			System.err.println("Container register should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
-		SupportUtil.getDepandOnSortedContainerClassList(getClassList()).forEach((container) -> {
+		SupportUtil.getDepandOnSortedModuleContainerList(getClassList()).forEach((container) -> {
 			destoryContainer(container);
 		});
 	}
 	
-	protected void loadContainer(Class<? extends Container>cls) {
+	protected void loadContainer(Class<? extends ModuleContainer>cls) {
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
@@ -92,12 +92,12 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		}
 	}
 
-	private boolean invokeFactoryMethod(Class<? extends Container> cls) {
+	protected boolean invokeFactoryMethod(Class<? extends ModuleContainer> cls) {
 		for(Method method :MethodUtil.getAllMethod(cls)) {
 			if(method.isAnnotationPresent(Assignable.class)) {
 				try {
-					System.err.println("Container    : "+cls.getSimpleName());
-					Container container=(Container) method.invoke(null);
+					System.err.println("ModuleContainer    : "+cls.getSimpleName());
+					ModuleContainer container=(ModuleContainer) method.invoke(null);
 					container.setContext(this);
 					container.init();
 					container.loadContainer();
@@ -111,10 +111,10 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		return false;
 	}
 
-	private void invokeInstanceMethod(Class<? extends Container> cls) {
+	protected void invokeInstanceMethod(Class<? extends ModuleContainer> cls) {
 		try {
-			System.err.println("Container    : "+cls.getSimpleName());
-			Container container = (Container) cls.newInstance();
+			System.err.println("ModuleContainer    : "+cls.getSimpleName());
+			ModuleContainer container = (ModuleContainer) cls.newInstance();
 			container.setContext(this);
 			container.init();
 			container.loadContainer();
@@ -135,14 +135,14 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		System.gc();
 	}
 	
-	protected LinkedHashSet<Class<? extends Container>> getClassList(){
+	protected LinkedHashSet<Class<? extends ModuleContainer>> getClassList(){
 		if(classList==null) {
 			classList=new LinkedHashSet<>();
 		}
 		return classList;
 	}
 	
-	protected void register(Class<? extends Container> container) {
+	protected void register(Class<? extends ModuleContainer> container) {
 		Assertion.notNull(container, "Container should not be null.");
 		getClassList().add(container);
 	}

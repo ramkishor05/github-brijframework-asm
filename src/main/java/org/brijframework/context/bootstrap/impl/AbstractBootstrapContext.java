@@ -1,142 +1,132 @@
 package org.brijframework.context.bootstrap.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.brijframework.container.BootstrapContainer;
 import org.brijframework.context.BootstrapContext;
-import org.brijframework.context.Context;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
+import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.reflect.InstanceUtil;
+import org.brijframework.util.reflect.MethodUtil;
 
 public abstract class AbstractBootstrapContext extends AbstractContext implements BootstrapContext {
 
-	private ConcurrentHashMap<Object, Context> cache = new ConcurrentHashMap<Object, Context>();
+	private ConcurrentHashMap<Object, BootstrapContainer> cache = new ConcurrentHashMap<Object, BootstrapContainer>();
 
-	private LinkedHashSet<Class<? extends Context>> classList;
+	private LinkedHashSet<Class<? extends BootstrapContainer>> classList;
 	
-	protected void loadContext(Class<? extends Context> contextClass) {
-		if(Stages.LOAD.equals(this.getStages())) {
-			System.err.println("Context already loaded.");
-			return;
+	protected void loadContainer(Class<? extends BootstrapContainer> bootstrapContainerClass) {
+		if(!InstanceUtil.isAssignable(bootstrapContainerClass)) {
+			return ;
 		}
-		if(contextClass==null) {
-			System.err.println("Context should not be null.");
-			return;
+		if(!this.invokeFactoryMethod(bootstrapContainerClass)) {
+			this.invokeInstanceMethod(bootstrapContainerClass);
 		}
-		Method assignable= findFactoryMethod(contextClass);
-		if (assignable!=null) {
-			System.err.println("---------------------------------------------------------------------");
-			System.err.println("Context      : " + contextClass.getSimpleName());
-			try {
-				Context context = (Context) assignable.invoke(null);
-				register(context);
-				context.start();
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}else if(InstanceUtil.isAssignable(contextClass)){
-			System.err.println("---------------------------------------------------------------------");
-			System.err.println("Context      : " + contextClass.getSimpleName());
-			try {
-				Context context = InstanceUtil.getInstance(contextClass);
-				if(context!=null) {
-					register(context);
-					context.start();
+	}
+
+	protected boolean invokeFactoryMethod(Class<? extends BootstrapContainer> bootstrapContainerClass) {
+		for(Method method :MethodUtil.getAllMethod(bootstrapContainerClass)) {
+			if(method.isAnnotationPresent(Assignable.class)) {
+				try {
+					System.err.println("Bootstrap container    : "+bootstrapContainerClass.getSimpleName());
+					BootstrapContainer bootstrapContainer=(BootstrapContainer) method.invoke(null);
+					register(bootstrapContainer);
+					return true;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
 			}
+		}
+		return false;
+	}
+
+	protected void invokeInstanceMethod(Class<? extends BootstrapContainer> bootstrapContainerClass) {
+		try {
+			System.err.println("Bootstrap container    : "+bootstrapContainerClass.getSimpleName());
+			BootstrapContainer bootstrapContainer = (BootstrapContainer) bootstrapContainerClass.newInstance();
+			register(bootstrapContainer);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	protected void destoryContext(Class<? extends Context> contextClass) {
-		if(!InstanceUtil.isAssignable(contextClass)) {
+	protected void destoryContext(Class<? extends BootstrapContainer> containerClass) {
+		if(!InstanceUtil.isAssignable(containerClass)) {
 			return ;
 		}
-		System.err.println("Context Destorying  : "+contextClass.getSimpleName());
-		getContexts().remove(contextClass.getName());
+		System.err.println("Bootstrap container Destorying  : "+containerClass.getSimpleName());
+		getContainers().remove(containerClass.getName());
 		System.gc();
-		System.err.println("Destoryed Container  : "+contextClass.getSimpleName());
+		System.err.println("Bootstrap container Container  : "+containerClass.getSimpleName());
 	}
 	
 	@Override
 	public void start() {
 		if(Stages.START.equals(this.getStages())) {
-			System.err.println("Context already started.");
+			System.err.println("Bootstrap container already started.");
 			return;
 		}
 		if(getRegisteredList()==null || getRegisteredList().isEmpty()) {
-			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			System.err.println("Bootstrap container should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
-		getRegisteredList().forEach((Context) ->{ loadContext(Context);});
+		getRegisteredList().forEach((Context) ->{ 
+			loadContainer(Context);
+		});
 		this.setStages(Stages.START);
 	}
 	
 	@Override
 	public void stop() {
 		if(Stages.STOPED.equals(this.getStages())) {
-			System.err.println("Context already stoped.");
+			System.err.println("Bootstrap container already stoped.");
 			return;
 		}
 		if(getRegisteredList()==null || getRegisteredList().isEmpty()) {
-			System.err.println("Context should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			System.err.println("Bootstrap container should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
-		getRegisteredList().forEach((Context) ->{ destoryContext(Context);});
+		getRegisteredList().forEach((Context) ->{ 
+			destoryContext(Context);
+		});
 		this.setStages(Stages.STOPED);
 	}
 
 	@Override
-	public ConcurrentHashMap<Object, Context> getContexts() {
+	public ConcurrentHashMap<Object, BootstrapContainer> getContainers() {
 		if(this.cache==null) {
-			this.cache = new ConcurrentHashMap<Object, Context>();
+			this.cache = new ConcurrentHashMap<Object, BootstrapContainer>();
 		}
 		return this.cache;
 	}
 	
-	protected LinkedHashSet<Class<? extends Context>> getRegisteredList(){
-		return SupportUtil.getDepandOnSortedClassList(classList);
+	protected LinkedHashSet<Class<? extends BootstrapContainer>> getRegisteredList(){
+		return SupportUtil.getDepandOnSortedBootstrapContainerList(getClassList());
 	}
 	
-	public LinkedHashSet<Class<? extends Context>> getClassList() {
+	public LinkedHashSet<Class<? extends BootstrapContainer>> getClassList() {
 		if(classList==null) {
 			classList=new LinkedHashSet<>();
 		}
 		return classList;
 	}
 	
-	protected void register(Class<? extends Context> context) {
+	protected void register(Class<? extends BootstrapContainer> context) {
 		Assertion.notNull(context, "Context class should not be null.");
 		getClassList().add(context);
 	}
 	
-	protected void register(Context context) {
-		Assertion.notNull(context, "Context should not be null.");
-		context.initialize(this);
-		context.init();
-		getContexts().put(context.getClass().getName(),context);
-	}
-	
-	public Context getContext(String key) {
-		return cache.get(key);
-	}
-	
-	public List<Context> getContexts(Class<? extends Context> contextClass) {
-		List<Context> contexts=new ArrayList<>();
-		for(Context context:cache.values()) {
-			if(contextClass.isAssignableFrom(context.getClass())) {
-				contexts.add(context);
-			}
-		}
-		return contexts;
+	protected void register(BootstrapContainer bootstrapContainer) {
+		Assertion.notNull(bootstrapContainer, "bootstrap container should not be null.");
+		bootstrapContainer.setContext(this);
+		bootstrapContainer.init();
+		bootstrapContainer.loadContainer();
+		getContainers().put(bootstrapContainer.getClass().getSimpleName(), bootstrapContainer);
 	}
 	
 }
