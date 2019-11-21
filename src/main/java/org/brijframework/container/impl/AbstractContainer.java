@@ -13,6 +13,7 @@ import org.brijframework.group.Group;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
+import org.brijframework.util.printer.ConsolePrint;
 
 public abstract class AbstractContainer implements DefaultContainer {
 	
@@ -44,7 +45,6 @@ public abstract class AbstractContainer implements DefaultContainer {
 	
 	protected void register(Class<? extends Factory> container) {
 		Assertion.notNull(container, "Factory class should not be null.");
-		System.out.println("Factory registry : "+container);
 		getClassList().add(container);
 	}
 	
@@ -60,7 +60,6 @@ public abstract class AbstractContainer implements DefaultContainer {
 			return ;
 		}
 		try {
-			System.err.println("Factory      : " + cls.getSimpleName());
 			Factory factory = (Factory)target.invoke(null);
 			factory.setContainer(this);
 			factory.loadFactory();
@@ -85,9 +84,11 @@ public abstract class AbstractContainer implements DefaultContainer {
 
 	@Override
 	public Container loadContainer() {
+		ConsolePrint.screen(this.getClass().getSimpleName() , "Strating to lunch the container for "+this.getClass().getSimpleName());
 		SupportUtil.getDepandOnSortedFactoryList(getClassList()).forEach((metaFactory) -> {
 			loadFactory((Class<? extends Factory>)metaFactory); 
 		});
+		ConsolePrint.screen(this.getClass().getSimpleName() , "Successfully lunch the container for "+this.getClass().getSimpleName());
 		return this;
 	}
 	

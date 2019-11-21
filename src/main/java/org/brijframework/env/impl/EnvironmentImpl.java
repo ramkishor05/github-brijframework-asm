@@ -1,7 +1,7 @@
 package org.brijframework.env.impl;
 
-import static org.brijframework.support.config.SupportConstants.APPLICATION_BOOTSTRAP_CONFIG_FILES;
-import static org.brijframework.support.config.SupportConstants.APPLICATION_BOOTSTRAP_CONFIG_PATHS;
+import static org.brijframework.support.config.SupportConstants.APPLICATION_CONFIGRATION_FILE_NAMES;
+import static org.brijframework.support.config.SupportConstants.APPLICATION_CONFIGRATION_PATH_KEY;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,9 +36,7 @@ public class EnvironmentImpl extends Properties implements Environment {
 		loadFileLocateConfig();
 		this.entrySet().stream()
 		.sorted((entry1, entry2) -> ((String) entry1.getKey()).compareToIgnoreCase(((String) entry2.getKey())))
-		.forEach(entry -> {
-			System.err.println(entry.getKey() + "=" + entry.getValue());
-		});
+		;
 	}
 	
 	@Override
@@ -47,7 +45,7 @@ public class EnvironmentImpl extends Properties implements Environment {
 	}
 
 	protected void findAnnotationConfig() {
-		if (this.containsKey(APPLICATION_BOOTSTRAP_CONFIG_PATHS)) {
+		if (this.containsKey(APPLICATION_CONFIGRATION_PATH_KEY)) {
 			return;
 		}
 		try {
@@ -58,7 +56,7 @@ public class EnvironmentImpl extends Properties implements Environment {
 					FileFactory.getResources(Arrays.asList(config.paths().split("\\|"))).forEach(file -> {
 						files.add(file.getAbsolutePath());
 					});
-					this.put(APPLICATION_BOOTSTRAP_CONFIG_PATHS, files);
+					this.put(APPLICATION_CONFIGRATION_PATH_KEY, files);
 				}
 			});
 		} catch (Exception e) {
@@ -67,15 +65,15 @@ public class EnvironmentImpl extends Properties implements Environment {
 	}
 
 	protected void findFileLocateConfig() {
-		if (this.containsKey(APPLICATION_BOOTSTRAP_CONFIG_PATHS)) {
+		if (this.containsKey(APPLICATION_CONFIGRATION_PATH_KEY)) {
 			return;
 		}
 		try {
 			List<String> files = new ArrayList<>();
-			FileFactory.getResources(Arrays.asList(APPLICATION_BOOTSTRAP_CONFIG_FILES.split("\\|"))).forEach(file -> {
+			FileFactory.getResources(Arrays.asList(APPLICATION_CONFIGRATION_FILE_NAMES.split("\\|"))).forEach(file -> {
 				files.add(file.getAbsolutePath());
 			});
-			this.put(APPLICATION_BOOTSTRAP_CONFIG_PATHS,files);
+			this.put(APPLICATION_CONFIGRATION_PATH_KEY,files);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,9 +82,8 @@ public class EnvironmentImpl extends Properties implements Environment {
 	protected void loadFileLocateConfig() {
 		try {
 			@SuppressWarnings("unchecked")
-			List<String> files = (List<String>) this.get(APPLICATION_BOOTSTRAP_CONFIG_PATHS);
+			List<String> files = (List<String>) this.get(APPLICATION_CONFIGRATION_PATH_KEY);
 			for (String filePath : files) {
-				System.err.println(APPLICATION_BOOTSTRAP_CONFIG_PATHS + "=" + filePath);
 				File file=new File(filePath);
 				if (!file.exists()) {
 					System.err.println("Env configration file not found.");

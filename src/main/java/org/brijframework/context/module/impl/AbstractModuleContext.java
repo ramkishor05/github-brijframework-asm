@@ -13,6 +13,7 @@ import org.brijframework.context.impl.Stages;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
+import org.brijframework.util.printer.ConsolePrint;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
@@ -41,29 +42,35 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	
 	@Override
 	public void start() {
+		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Starting to lunch the module context for "+this.getClass().getSimpleName());
 		Stages stages = getStages();
 		switch (stages) {
 		case INIT:
 			this.init();
-			//this.setStages(Stages.LOAD);
+			this.setStages(Stages.LOAD);
 		case LOAD:
 			this.load();
-			//this.setStages(Stages.READY);
+			this.setStages(Stages.READY);
 		case READY:
 			this.ready();
-			//this.setStages(Stages.START);
-		case START:
-			System.err.println("Context already started.");
+			this.setStages(Stages.START);
 		default:
 			break;
 		}
+		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Started to lunch the module context for "+this.getClass().getSimpleName());
 	}
 	
 	private void ready() {
+		if(Stages.START.equals(getStages())) {
+			System.err.println("Context already stoped.");
+			return;
+		}
+		if(getClassList()==null || getClassList().isEmpty()) {
+			System.err.println("Container register should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
+			return;
+		}
+		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Ready container for module container to lunch the related factories");
 		SupportUtil.getDepandOnSortedModuleContainerList(getClassList()).forEach((container) -> {
-			System.err.println("---------------------Container------------------");
-			System.err.println(container.getSimpleName());
-			System.err.println("------------------------------------------------");
 			loadContainer(container);
 		});
 	}
@@ -87,16 +94,17 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
+		ConsolePrint.screen("ModuleContainer -> "+cls.getSimpleName(), "Loading container for module container to lunch the related factories");
 		if(!this.invokeFactoryMethod(cls)) {
 			this.invokeInstanceMethod(cls);
 		}
+		ConsolePrint.screen("ModuleContainer -> "+cls.getSimpleName(), "Loaded container for module container to lunch the related factories");
 	}
 
 	protected boolean invokeFactoryMethod(Class<? extends ModuleContainer> cls) {
 		for(Method method :MethodUtil.getAllMethod(cls)) {
 			if(method.isAnnotationPresent(Assignable.class)) {
 				try {
-					System.err.println("ModuleContainer    : "+cls.getSimpleName());
 					ModuleContainer container=(ModuleContainer) method.invoke(null);
 					container.setContext(this);
 					container.init();
@@ -113,7 +121,6 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 
 	protected void invokeInstanceMethod(Class<? extends ModuleContainer> cls) {
 		try {
-			System.err.println("ModuleContainer    : "+cls.getSimpleName());
 			ModuleContainer container = (ModuleContainer) cls.newInstance();
 			container.setContext(this);
 			container.init();
@@ -128,9 +135,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
-		System.err.println("Destorying Container    : "+cls.getSimpleName());
 		Container container = getContainers().remove(cls.getName());
-		System.err.println("Destoryed Container     : "+cls.getSimpleName());
 		container.clearContainer();
 		System.gc();
 	}

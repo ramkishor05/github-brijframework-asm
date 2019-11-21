@@ -47,10 +47,8 @@ public abstract class AbstractContext implements Context{
 	}
 
 	protected void load() {
-		System.err.println("======================Environment loading..==================================");
 		environment = new EnvironmentImpl();
 		environment.init();
-		System.err.println("======================Environment completed==================================");
 	}
 	
 	protected Method findFactoryMethod(Class<? extends Container> contextClass) {

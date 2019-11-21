@@ -11,6 +11,7 @@ import org.brijframework.context.impl.Stages;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
+import org.brijframework.util.printer.ConsolePrint;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
@@ -33,7 +34,6 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 		for(Method method :MethodUtil.getAllMethod(bootstrapContainerClass)) {
 			if(method.isAnnotationPresent(Assignable.class)) {
 				try {
-					System.err.println("Bootstrap container    : "+bootstrapContainerClass.getSimpleName());
 					BootstrapContainer bootstrapContainer=(BootstrapContainer) method.invoke(null);
 					register(bootstrapContainer);
 					return true;
@@ -47,7 +47,6 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 
 	protected void invokeInstanceMethod(Class<? extends BootstrapContainer> bootstrapContainerClass) {
 		try {
-			System.err.println("Bootstrap container    : "+bootstrapContainerClass.getSimpleName());
 			BootstrapContainer bootstrapContainer = (BootstrapContainer) bootstrapContainerClass.newInstance();
 			register(bootstrapContainer);
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -59,10 +58,8 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 		if(!InstanceUtil.isAssignable(containerClass)) {
 			return ;
 		}
-		System.err.println("Bootstrap container Destorying  : "+containerClass.getSimpleName());
 		getContainers().remove(containerClass.getName());
 		System.gc();
-		System.err.println("Bootstrap container Container  : "+containerClass.getSimpleName());
 	}
 	
 	@Override
@@ -71,14 +68,17 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 			System.err.println("Bootstrap container already started.");
 			return;
 		}
+		this.init();
 		if(getRegisteredList()==null || getRegisteredList().isEmpty()) {
 			System.err.println("Bootstrap container should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
+		ConsolePrint.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Starting bootstrap context for loading the bootstrap container");
 		getRegisteredList().forEach((Context) ->{ 
 			loadContainer(Context);
 		});
 		this.setStages(Stages.START);
+		ConsolePrint.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Started bootstrap context for loading the bootstrap container");
 	}
 	
 	@Override
@@ -127,6 +127,16 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 		bootstrapContainer.init();
 		bootstrapContainer.loadContainer();
 		getContainers().put(bootstrapContainer.getClass().getSimpleName(), bootstrapContainer);
+	}
+	
+	@Override
+	public void poststart(BootstrapContainer container) {
+		
+	}
+	
+	@Override
+	public void prestart(BootstrapContainer container) {
+		
 	}
 	
 }
