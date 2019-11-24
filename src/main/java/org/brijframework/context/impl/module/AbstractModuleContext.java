@@ -1,15 +1,15 @@
-package org.brijframework.context.module.impl;
+package org.brijframework.context.impl.module;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
-import org.brijframework.container.ModuleContainer;
+import org.brijframework.container.module.ModuleContainer;
 import org.brijframework.context.Context;
-import org.brijframework.context.ModuleContext;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
+import org.brijframework.context.module.ModuleContext;
 import org.brijframework.support.config.Assignable;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;

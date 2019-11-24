@@ -1,11 +1,11 @@
-package org.brijframework.context.bootstrap.impl;
+package org.brijframework.context.impl.bootstrap;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.brijframework.container.BootstrapContainer;
-import org.brijframework.context.BootstrapContext;
+import org.brijframework.container.bootstrap.BootstrapContainer;
+import org.brijframework.context.bootstrap.BootstrapContext;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
 import org.brijframework.support.config.Assignable;

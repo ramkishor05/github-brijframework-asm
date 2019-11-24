@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.brijframework.factories.module.ModuleFactory;
 import org.brijframework.util.resouces.ResourcesUtil;
 
-public interface FileFactory {
+public interface FileFactory<K,T> extends ModuleFactory<K, T>{
 
 	public static final String MANIFEST_MF = "MANIFEST.MF";
 	public static final String POM_PROPERTIES = "pom.properties";

@@ -1,104 +1,89 @@
 package org.brijframework.env.impl;
 
-import static org.brijframework.support.config.SupportConstants.APPLICATION_CONFIGRATION_FILE_NAMES;
-import static org.brijframework.support.config.SupportConstants.APPLICATION_CONFIGRATION_PATH_KEY;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import org.brijframework.env.Environment;
-import org.brijframework.factories.impl.FileFactory;
-import org.brijframework.support.config.EnvironmentConfig;
-import org.brijframework.support.enums.ResourceType;
-import org.brijframework.util.objects.PropertiesUtil;
-import org.brijframework.util.reflect.AnnotationUtil;
-import org.brijframework.util.reflect.ReflectionUtils;
-import org.brijframework.util.resouces.YamlUtil;
 
-public class EnvironmentImpl extends Properties implements Environment {
+public class EnvironmentImpl implements Environment {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	private String name;
+	private boolean active;
+	private Properties properties;
 	public EnvironmentImpl() {
-		setProperties(System.getProperties());
 	}
 
 	@Override
 	public void init() {
-		findAnnotationConfig();
-		findFileLocateConfig();
-		loadFileLocateConfig();
-		this.entrySet().stream()
-		.sorted((entry1, entry2) -> ((String) entry1.getKey()).compareToIgnoreCase(((String) entry2.getKey())))
-		;
+		
 	}
-	
+
 	@Override
 	public void setProperties(Properties properties) {
-		this.putAll(properties);
+		getProperties().putAll(properties);
 	}
 
-	protected void findAnnotationConfig() {
-		if (this.containsKey(APPLICATION_CONFIGRATION_PATH_KEY)) {
-			return;
+	@Override
+	public Properties getProperties() {
+		if (properties == null) {
+			properties = new Properties();
 		}
-		try {
-			ReflectionUtils.getClassListFromInternal().forEach(cls -> {
-				if (cls.isAnnotationPresent(EnvironmentConfig.class)) {
-					EnvironmentConfig config = (EnvironmentConfig) AnnotationUtil.getAnnotation(cls, EnvironmentConfig.class);
-					List<String> files = new ArrayList<>();
-					FileFactory.getResources(Arrays.asList(config.paths().split("\\|"))).forEach(file -> {
-						files.add(file.getAbsolutePath());
-					});
-					this.put(APPLICATION_CONFIGRATION_PATH_KEY, files);
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		return properties;
 	}
 
-	protected void findFileLocateConfig() {
-		if (this.containsKey(APPLICATION_CONFIGRATION_PATH_KEY)) {
-			return;
-		}
-		try {
-			List<String> files = new ArrayList<>();
-			FileFactory.getResources(Arrays.asList(APPLICATION_CONFIGRATION_FILE_NAMES.split("\\|"))).forEach(file -> {
-				files.add(file.getAbsolutePath());
-			});
-			this.put(APPLICATION_CONFIGRATION_PATH_KEY,files);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	@Override
+	public String getName() {
+		return name;
 	}
 
-	protected void loadFileLocateConfig() {
-		try {
-			@SuppressWarnings("unchecked")
-			List<String> files = (List<String>) this.get(APPLICATION_CONFIGRATION_PATH_KEY);
-			for (String filePath : files) {
-				File file=new File(filePath);
-				if (!file.exists()) {
-					System.err.println("Env configration file not found.");
-					continue;
-				}
-				if (filePath.toString().endsWith(ResourceType.PROP)) {
-					this.putAll(PropertiesUtil.getProperties(file));
-				}
-				if (filePath.toString().endsWith(ResourceType.YML) || filePath.toString().endsWith(ResourceType.YAML)) {
-					this.putAll(YamlUtil.getEnvProperties(file));
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void setName(String name) {
+		this.name = name;
 	}
 
+	@Override
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	@Override
+	public String get(String key) {
+		return getProperties().getProperty(key);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (active ? 1231 : 1237);
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EnvironmentImpl other = (EnvironmentImpl) obj;
+		if (active != other.active)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EnvironmentImpl [name=" + name + ", active=" + active + ", properties=" + properties + "]";
+	}
+	
 }

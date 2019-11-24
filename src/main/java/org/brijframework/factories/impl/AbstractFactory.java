@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.brijframework.container.Container;
 import org.brijframework.factories.Factory;
 
-public abstract class AbstractFactory<K,T> implements Factory {
+public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 	Container container;
 	ConcurrentHashMap<K, T> cache;
 
@@ -28,17 +28,23 @@ public abstract class AbstractFactory<K,T> implements Factory {
 	}
 
 	@Override
-	public Factory clear() {
+	public Factory<K,T> clear() {
 		getCache().clear();
 		return this;
 	}
 
-	public void register(K key, T value) {
+	public T register(K key, T value) {
 		preregister(key, value);
 		getCache().put(key, value);
 		postregister(key, value);
+		return value;
 	}
 	
+	@Override
+	public T find(K key) {
+		return getCache().get(key);
+	}
+
 	protected abstract void preregister(K key, T value) ;
 	
 	protected abstract void postregister(K key, T value);

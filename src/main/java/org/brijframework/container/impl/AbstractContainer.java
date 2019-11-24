@@ -3,7 +3,6 @@ package org.brijframework.container.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
@@ -11,15 +10,10 @@ import org.brijframework.context.Context;
 import org.brijframework.factories.Factory;
 import org.brijframework.group.Group;
 import org.brijframework.support.config.Assignable;
-import org.brijframework.support.util.SupportUtil;
-import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.printer.ConsolePrint;
 
 public abstract class AbstractContainer implements DefaultContainer {
 	
 	private Context context;
-	
-	private LinkedHashSet<Class<? extends Factory>> classList = new LinkedHashSet<>();
 	
 	private ConcurrentHashMap<Object, Group> cache = new ConcurrentHashMap<>();
 
@@ -38,29 +32,19 @@ public abstract class AbstractContainer implements DefaultContainer {
 		this.context = context;
 	}
 	
-	@Override
-	public LinkedHashSet<Class<? extends Factory>> getClassList(){
-		return classList;
-	}
-	
-	protected void register(Class<? extends Factory> container) {
-		Assertion.notNull(container, "Factory class should not be null.");
-		getClassList().add(container);
-	}
-	
-	protected void loadFactory(Class<? extends Factory> cls) {
+	protected void loadFactory(Class<? extends Factory<?, ?>> cls) {
 		if (cls==null) {
 			return ;
 		}
 		this.invokeFactoryMethod(cls, findFactoryMethod(cls));
 	}
 
-	private void invokeFactoryMethod(Class<? extends Factory> cls, Method target) {
+	private void invokeFactoryMethod(Class<? extends Factory<?, ?>> cls, Method target) {
 		if (target==null) {
 			return ;
 		}
 		try {
-			Factory factory = (Factory)target.invoke(null);
+			Factory<?, ?> factory = (Factory<?, ?>)target.invoke(null);
 			factory.setContainer(this);
 			factory.loadFactory();
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -68,7 +52,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 		}
 	}
 
-	private Method findFactoryMethod(Class<? extends Factory> cls) {
+	private Method findFactoryMethod(Class<? extends Factory<?, ?>> cls) {
 		for (Method method : cls.getMethods()) {
 			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class) && cls.isAssignableFrom(method.getReturnType())  ) {
 				try {
@@ -79,17 +63,6 @@ public abstract class AbstractContainer implements DefaultContainer {
 			}
 		}
 		return null;
-	}
-	
-
-	@Override
-	public Container loadContainer() {
-		ConsolePrint.screen(this.getClass().getSimpleName() , "Strating to lunch the container for "+this.getClass().getSimpleName());
-		SupportUtil.getDepandOnSortedFactoryList(getClassList()).forEach((metaFactory) -> {
-			loadFactory((Class<? extends Factory>)metaFactory); 
-		});
-		ConsolePrint.screen(this.getClass().getSimpleName() , "Successfully lunch the container for "+this.getClass().getSimpleName());
-		return this;
 	}
 	
 	@Override
