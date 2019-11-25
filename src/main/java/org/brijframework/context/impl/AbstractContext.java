@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.env.Environment;
-import org.brijframework.env.impl.EnvironmentImpl;
+import org.brijframework.factories.impl.bootstrap.env.EnvironmentFactory;
 import org.brijframework.support.config.Assignable;
 
 public abstract class AbstractContext implements Context{
@@ -47,8 +47,7 @@ public abstract class AbstractContext implements Context{
 	}
 
 	protected void load() {
-		environment = new EnvironmentImpl();
-		environment.init();
+		environment = EnvironmentFactory.getFactory().getEnvironment();
 	}
 	
 	protected Method findFactoryMethod(Class<? extends Container> contextClass) {

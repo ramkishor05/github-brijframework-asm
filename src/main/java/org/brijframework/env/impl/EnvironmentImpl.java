@@ -49,8 +49,8 @@ public class EnvironmentImpl implements Environment {
 	}
 
 	@Override
-	public String get(String key) {
-		return getProperties().getProperty(key);
+	public Object get(String key) {
+		return getProperties().get(key);
 	}
 
 	@Override

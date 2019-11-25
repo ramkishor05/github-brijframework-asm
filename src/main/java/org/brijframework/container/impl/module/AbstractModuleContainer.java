@@ -23,7 +23,6 @@ public abstract class AbstractModuleContainer extends AbstractContainer implemen
 			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunching the module factory for "+metaFactory.getSimpleName());
 			loadFactory((Class<? extends ModuleFactory<?,?>>)metaFactory); 
 			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunched the module factory for "+metaFactory.getSimpleName());
-			
 		});
 		ConsolePrint.screen("ModuleContainer -> "+this.getClass().getSimpleName()  , "Successfully lunch the container for "+this.getClass().getSimpleName());
 		return this;

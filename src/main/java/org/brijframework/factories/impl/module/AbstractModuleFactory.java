@@ -1,4 +1,4 @@
-package org.brijframework.factories.impl.bootstrap;
+package org.brijframework.factories.impl.module;
 
 import org.brijframework.factories.impl.AbstractFactory;
 import org.brijframework.factories.module.ModuleFactory;
