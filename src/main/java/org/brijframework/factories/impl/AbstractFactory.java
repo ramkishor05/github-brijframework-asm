@@ -26,6 +26,13 @@ public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 		}
 		return cache;
 	}
+	
+	public T getContainer(String modelKey) {
+		if (getContainer() == null) {
+			return null;
+		}
+		return getContainer().find(modelKey);
+	}
 
 	@Override
 	public Factory<K,T> clear() {

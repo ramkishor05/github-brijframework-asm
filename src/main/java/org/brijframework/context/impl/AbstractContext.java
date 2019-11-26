@@ -7,7 +7,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.env.Environment;
 import org.brijframework.factories.impl.bootstrap.env.EnvironmentFactory;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.support.config.SingletonFactory;
 
 public abstract class AbstractContext implements Context{
 
@@ -52,7 +52,7 @@ public abstract class AbstractContext implements Context{
 	
 	protected Method findFactoryMethod(Class<? extends Container> contextClass) {
 		for (Method method : contextClass.getMethods()) {
-			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class)) {
+			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(SingletonFactory.class)) {
 				return method;
 			}
 		}

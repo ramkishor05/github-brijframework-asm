@@ -9,7 +9,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.factories.Factory;
 import org.brijframework.group.Group;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.support.config.SingletonFactory;
 
 public abstract class AbstractContainer implements DefaultContainer {
 	
@@ -54,7 +54,7 @@ public abstract class AbstractContainer implements DefaultContainer {
 
 	private Method findFactoryMethod(Class<? extends Factory<?, ?>> cls) {
 		for (Method method : cls.getMethods()) {
-			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(Assignable.class) && cls.isAssignableFrom(method.getReturnType())  ) {
+			if (Modifier.isStatic(method.getModifiers()) && method.isAnnotationPresent(SingletonFactory.class) && cls.isAssignableFrom(method.getReturnType())  ) {
 				try {
 					return method;
 				} catch (IllegalArgumentException e) {

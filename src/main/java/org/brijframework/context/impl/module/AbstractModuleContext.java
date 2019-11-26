@@ -10,7 +10,7 @@ import org.brijframework.context.Context;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
 import org.brijframework.context.module.ModuleContext;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.printer.ConsolePrint;
@@ -103,7 +103,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 
 	protected boolean invokeFactoryMethod(Class<? extends ModuleContainer> cls) {
 		for(Method method :MethodUtil.getAllMethod(cls)) {
-			if(method.isAnnotationPresent(Assignable.class)) {
+			if(method.isAnnotationPresent(SingletonFactory.class)) {
 				try {
 					ModuleContainer container=(ModuleContainer) method.invoke(null);
 					container.setContext(this);

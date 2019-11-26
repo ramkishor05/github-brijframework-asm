@@ -10,7 +10,7 @@ import java.util.Properties;
 import org.brijframework.env.Environment;
 import org.brijframework.env.impl.EnvironmentImpl;
 import org.brijframework.factories.impl.bootstrap.AbstractBootstrapFactory;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.config.OrderOn;
 import org.brijframework.support.config.SupportConstants;
 import org.brijframework.support.config.application.EnvironmentResource;
@@ -29,7 +29,7 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 	private static final String prefix_classpath = "classpath:";
 	private static EnvironmentFactory factory;
 	
-	@Assignable
+	@SingletonFactory
 	public static EnvironmentFactory getFactory() {
 		if(factory==null) {
 			factory=new EnvironmentFactory();

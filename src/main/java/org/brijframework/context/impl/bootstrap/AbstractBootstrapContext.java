@@ -8,7 +8,7 @@ import org.brijframework.container.bootstrap.BootstrapContainer;
 import org.brijframework.context.bootstrap.BootstrapContext;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
-import org.brijframework.support.config.Assignable;
+import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.printer.ConsolePrint;
@@ -32,7 +32,7 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 
 	protected boolean invokeFactoryMethod(Class<? extends BootstrapContainer> bootstrapContainerClass) {
 		for(Method method :MethodUtil.getAllMethod(bootstrapContainerClass)) {
-			if(method.isAnnotationPresent(Assignable.class)) {
+			if(method.isAnnotationPresent(SingletonFactory.class)) {
 				try {
 					BootstrapContainer bootstrapContainer=(BootstrapContainer) method.invoke(null);
 					register(bootstrapContainer);
