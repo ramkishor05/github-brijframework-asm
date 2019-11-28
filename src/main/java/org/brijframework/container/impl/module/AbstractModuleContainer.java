@@ -19,7 +19,7 @@ public abstract class AbstractModuleContainer extends AbstractContainer implemen
 	public AbstractModuleContainer loadContainer() {
 		ConsolePrint.screen("ModuleContainer -> "+this.getClass().getSimpleName() , "Strating to lunch the container for "+this.getClass().getSimpleName());
 		this.init();
-		getDepandOnSortedFactoryList(getModuleFactories()).forEach((metaFactory) -> {
+		getOrderOnSortedFactoryList(getModuleFactories()).forEach((metaFactory) -> {
 			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunching the module factory for "+metaFactory.getSimpleName());
 			loadFactory((Class<? extends ModuleFactory<?,?>>)metaFactory); 
 			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunched the module factory for "+metaFactory.getSimpleName());
@@ -81,6 +81,11 @@ public abstract class AbstractModuleContainer extends AbstractContainer implemen
 			list.add(factory);
 		});
 		return list;
+	}
+	
+	@Override
+	public boolean containsObject(Object key) {
+		return false;
 	}
 	
 }

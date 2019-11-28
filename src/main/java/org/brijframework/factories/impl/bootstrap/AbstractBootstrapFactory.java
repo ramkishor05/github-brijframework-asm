@@ -5,4 +5,7 @@ import org.brijframework.factories.impl.AbstractFactory;
 
 public abstract class AbstractBootstrapFactory<K,T> extends AbstractFactory<K,T> implements BootstrapFactory<K,T>{
 
+	@Override
+	protected void loadContainer(K key, T value) {
+	}
 }

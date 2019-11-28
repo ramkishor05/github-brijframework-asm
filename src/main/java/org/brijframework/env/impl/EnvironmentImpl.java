@@ -3,7 +3,11 @@ package org.brijframework.env.impl;
 import java.util.Properties;
 
 import org.brijframework.env.Environment;
+import org.brijframework.support.beans.Bean;
+import org.brijframework.support.model.Model;
 
+@Model(id="environment")
+@Bean(id="environment" , model="environment" , factoryClass="org.brijframework.factories.impl.bootstrap.env.EnvironmentFactory", factoryMethod="getFactory().getEnvironment()")
 public class EnvironmentImpl implements Environment {
 
 	private String name;

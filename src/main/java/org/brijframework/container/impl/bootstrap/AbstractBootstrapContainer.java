@@ -82,4 +82,9 @@ public abstract class AbstractBootstrapContainer extends AbstractContainer imple
 		return list;
 	}
 	
+	@Override
+	public boolean containsObject(Object key) {
+		return false;
+	}
+	
 }

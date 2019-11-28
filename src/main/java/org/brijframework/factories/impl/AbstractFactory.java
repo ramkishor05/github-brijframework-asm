@@ -3,6 +3,8 @@ package org.brijframework.factories.impl;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.Container;
+import org.brijframework.context.Context;
+import org.brijframework.env.Environment;
 import org.brijframework.factories.Factory;
 
 public abstract class AbstractFactory<K,T> implements Factory<K,T> {
@@ -27,7 +29,7 @@ public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 		return cache;
 	}
 	
-	public T getContainer(String modelKey) {
+	public T getContainer(K modelKey) {
 		if (getContainer() == null) {
 			return null;
 		}
@@ -43,17 +45,49 @@ public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 	public T register(K key, T value) {
 		preregister(key, value);
 		getCache().put(key, value);
+		loadContainer(key, value);
 		postregister(key, value);
 		return value;
 	}
-	
+
 	@Override
 	public T find(K key) {
-		return getCache().get(key);
+		if(getCache().containsKey(key)) {
+			return getCache().get(key);
+		}
+		return getContainer(key);
 	}
+	
+	
+	public Object getEnvProperty(String key) {
+		Container container = getContainer();
+		if(container==null) {
+			return null;
+		}
+		Context context = container.getContext();
+		if(context==null) {
+			return null;
+		}
+		Environment environment = context.getEnvironment();
+		if(environment==null) {
+			return null;
+		}
+		return environment.get(key);
+	}
+
+	@Override
+	public boolean contains(K key) {
+		if(getCache().containsKey(key)) {
+			return true;
+		}
+		return getContainer().containsObject(key);
+	}
+	
+	protected abstract void loadContainer(K key, T value);
 
 	protected abstract void preregister(K key, T value) ;
 	
 	protected abstract void postregister(K key, T value);
+	
 	
 }
