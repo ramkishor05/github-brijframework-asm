@@ -11,7 +11,7 @@ import org.brijframework.context.impl.Stages;
 import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.printer.ConsolePrint;
+import org.brijframework.util.printer.LoggerConsole;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
@@ -73,12 +73,12 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 			System.err.println("Bootstrap container should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
-		ConsolePrint.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Starting bootstrap context for loading the bootstrap container");
+		LoggerConsole.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Starting bootstrap context for loading the bootstrap container");
 		getRegisteredList().forEach((Context) ->{ 
 			loadContainer(Context);
 		});
 		this.setStages(Stages.START);
-		ConsolePrint.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Started bootstrap context for loading the bootstrap container");
+		LoggerConsole.screen("BootstrapContext -> "+this.getClass().getSimpleName(), "Started bootstrap context for loading the bootstrap container");
 	}
 	
 	@Override

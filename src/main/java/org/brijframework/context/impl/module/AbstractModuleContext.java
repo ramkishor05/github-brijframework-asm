@@ -13,7 +13,7 @@ import org.brijframework.context.module.ModuleContext;
 import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.printer.ConsolePrint;
+import org.brijframework.util.printer.LoggerConsole;
 import org.brijframework.util.reflect.InstanceUtil;
 import org.brijframework.util.reflect.MethodUtil;
 
@@ -42,7 +42,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 	
 	@Override
 	public void start() {
-		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Starting to lunch the module context for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Starting to lunch the module context for "+this.getClass().getSimpleName());
 		Stages stages = getStages();
 		switch (stages) {
 		case INIT:
@@ -57,7 +57,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		default:
 			break;
 		}
-		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Started to lunch the module context for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Started to lunch the module context for "+this.getClass().getSimpleName());
 	}
 	
 	private void ready() {
@@ -69,7 +69,7 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 			System.err.println("Container register should not be empty. please register context into @Override init method for :"+this.getClass().getSimpleName());
 			return;
 		}
-		ConsolePrint.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Ready container for module container to lunch the related factories");
+		LoggerConsole.screen("ModuleContext -> "+this.getClass().getSimpleName(), "Ready container for module container to lunch the related factories");
 		SupportUtil.getDepandOnSortedModuleContainerList(getClassList()).forEach((container) -> {
 			loadContainer(container);
 		});
@@ -94,11 +94,11 @@ public abstract class AbstractModuleContext extends AbstractContext implements M
 		if(!InstanceUtil.isAssignable(cls)) {
 			return ;
 		}
-		ConsolePrint.screen("ModuleContainer -> "+cls.getSimpleName(), "Loading container for module container to lunch the related factories");
+		LoggerConsole.screen("ModuleContainer -> "+cls.getSimpleName(), "Loading container for module container to lunch the related factories");
 		if(!this.invokeFactoryMethod(cls)) {
 			this.invokeInstanceMethod(cls);
 		}
-		ConsolePrint.screen("ModuleContainer -> "+cls.getSimpleName(), "Loaded container for module container to lunch the related factories");
+		LoggerConsole.screen("ModuleContainer -> "+cls.getSimpleName(), "Loaded container for module container to lunch the related factories");
 	}
 
 	protected boolean invokeFactoryMethod(Class<? extends ModuleContainer> cls) {

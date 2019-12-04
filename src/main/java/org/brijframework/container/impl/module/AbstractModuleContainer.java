@@ -8,7 +8,7 @@ import org.brijframework.factories.module.ModuleFactory;
 import org.brijframework.support.config.DepandOn;
 import org.brijframework.support.config.OrderOn;
 import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.printer.ConsolePrint;
+import org.brijframework.util.printer.LoggerConsole;
 import org.brijframework.util.reflect.AnnotationUtil;
 
 public abstract class AbstractModuleContainer extends AbstractContainer implements ModuleContainer{
@@ -17,14 +17,14 @@ public abstract class AbstractModuleContainer extends AbstractContainer implemen
 	
 	@Override
 	public AbstractModuleContainer loadContainer() {
-		ConsolePrint.screen("ModuleContainer -> "+this.getClass().getSimpleName() , "Strating to lunch the container for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("ModuleContainer -> "+this.getClass().getSimpleName() , "Strating to lunch the container for "+this.getClass().getSimpleName());
 		this.init();
 		getOrderOnSortedFactoryList(getModuleFactories()).forEach((metaFactory) -> {
-			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunching the module factory for "+metaFactory.getSimpleName());
+			LoggerConsole.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunching the module factory for "+metaFactory.getSimpleName());
 			loadFactory((Class<? extends ModuleFactory<?,?>>)metaFactory); 
-			ConsolePrint.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunched the module factory for "+metaFactory.getSimpleName());
+			LoggerConsole.screen("ModuleFactory -> "+metaFactory.getSimpleName() , "Lunched the module factory for "+metaFactory.getSimpleName());
 		});
-		ConsolePrint.screen("ModuleContainer -> "+this.getClass().getSimpleName()  , "Successfully lunch the container for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("ModuleContainer -> "+this.getClass().getSimpleName()  , "Successfully lunch the container for "+this.getClass().getSimpleName());
 		return this;
 	}
 	

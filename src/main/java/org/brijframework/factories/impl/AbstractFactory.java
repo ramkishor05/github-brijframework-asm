@@ -6,6 +6,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.env.Environment;
 import org.brijframework.factories.Factory;
+import org.brijframework.group.Group;
 
 public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 	Container container;
@@ -83,11 +84,21 @@ public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 		return getContainer().containsObject(key);
 	}
 	
-	protected abstract void loadContainer(K key, T value);
-
 	protected abstract void preregister(K key, T value) ;
 	
 	protected abstract void postregister(K key, T value);
 	
+	@Override
+	public void loadContainer(K key, T value) {
+		if (getContainer() == null) {
+			return;
+		}
+		Group group = getContainer().load(value.getClass().getName());
+		if(!group.containsKey(key)) {
+			group.add(key, value);
+		}else {
+			group.update(key, value);
+		}
+	}
 	
 }

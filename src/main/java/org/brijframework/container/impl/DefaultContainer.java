@@ -9,6 +9,7 @@ import org.brijframework.context.Context;
 import org.brijframework.group.Group;
 import org.brijframework.util.asserts.AssertMessage;
 import org.brijframework.util.asserts.Assertion;
+import org.brijframework.util.printer.LoggerConsole;
 
 public interface DefaultContainer extends Container{
 	
@@ -17,6 +18,7 @@ public interface DefaultContainer extends Container{
 		Assertion.notNull(groupKey,AssertMessage.arg_null_or_empty_message+" -> groupKey");
 		Assertion.notNull(group,AssertMessage.arg_null_message+" -> group");
 		Assertion.isTrue(getCache().get(groupKey) != null,AssertMessage.allready_contains+"->"+groupKey);
+		LoggerConsole.screen("Group", "Group registered with id :"+groupKey);
 		return getCache().put(groupKey, group);
 	}
 
@@ -24,6 +26,7 @@ public interface DefaultContainer extends Container{
 	public default Group update(Object groupKey, Group group) {
 		Assertion.notNull(groupKey,AssertMessage.arg_null_or_empty_message+" -> groupKey");
 		Assertion.isTrue(getCache().get(groupKey)== null,AssertMessage.key_not_contains+"->"+groupKey);
+		LoggerConsole.screen("Group", "Group changed with id :"+groupKey);
 		return getCache().replace(groupKey, group);
 	}
 
@@ -31,6 +34,7 @@ public interface DefaultContainer extends Container{
 	public default Group remove(Object groupKey) {
 		Assertion.notNull(groupKey,AssertMessage.arg_null_or_empty_message+" -> groupKey");
 		Assertion.isTrue(getCache().get(groupKey) != null,AssertMessage.key_not_contains+"->"+groupKey);
+		LoggerConsole.screen("Group", "Group removed with id :"+groupKey);
 		return getCache().remove(groupKey);
 	}
 

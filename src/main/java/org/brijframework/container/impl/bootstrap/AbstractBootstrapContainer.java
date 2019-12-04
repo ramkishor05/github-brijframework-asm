@@ -10,7 +10,7 @@ import org.brijframework.factories.bootstrap.BootstrapFactory;
 import org.brijframework.support.config.DepandOn;
 import org.brijframework.support.config.OrderOn;
 import org.brijframework.util.asserts.Assertion;
-import org.brijframework.util.printer.ConsolePrint;
+import org.brijframework.util.printer.LoggerConsole;
 import org.brijframework.util.reflect.AnnotationUtil;
 
 public abstract class AbstractBootstrapContainer extends AbstractContainer implements BootstrapContainer{
@@ -19,11 +19,11 @@ public abstract class AbstractBootstrapContainer extends AbstractContainer imple
 
 	@Override
 	public Container loadContainer() {
-		ConsolePrint.screen("BootstrapContainer -> "+this.getClass().getSimpleName() , "Loading the bootstrap container for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("BootstrapContainer -> "+this.getClass().getSimpleName() , "Loading the bootstrap container for "+this.getClass().getSimpleName());
 		getOrderOnSortedFactoryList(getBootstrapFactories()).forEach((metaFactory) -> {
 			loadFactory((Class<? extends Factory<?, ?>>)metaFactory); 
 		});
-		ConsolePrint.screen("BootstrapContainer -> "+this.getClass().getSimpleName() , "Loaded the bootstrap container for "+this.getClass().getSimpleName());
+		LoggerConsole.screen("BootstrapContainer -> "+this.getClass().getSimpleName() , "Loaded the bootstrap container for "+this.getClass().getSimpleName());
 		return this;
 	}
 
