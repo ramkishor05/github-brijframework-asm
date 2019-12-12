@@ -16,9 +16,9 @@ import org.brijframework.support.config.SingletonFactory;
 import org.brijframework.support.config.SupportConstants;
 import org.brijframework.support.config.application.EnvironmentResource;
 import org.brijframework.support.enums.ResourceType;
+import org.brijframework.util.factories.ReflectionFactory;
 import org.brijframework.util.objects.PropertiesUtil;
 import org.brijframework.util.printer.LoggerConsole;
-import org.brijframework.util.reflect.ReflectionUtils;
 import org.brijframework.util.resouces.ResourcesUtil;
 import org.brijframework.util.resouces.YamlUtil;
 import org.brijframework.util.text.StringUtil;
@@ -48,7 +48,7 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 		if(StringUtil.isNonEmpty(environmentFiles)) {
 			loadEnviroment(environmentLocation, environmentFiles, environmentPaths);
 		}else {
-			ReflectionUtils.getClassListFromInternal().forEach(cls->{
+			ReflectionFactory.getFactory().getClassListFromInternal().forEach(cls->{
 				if(cls.isAnnotationPresent(EnvironmentResource.class)) {
 					EnvironmentResource resource=cls.getAnnotation(EnvironmentResource.class);
 					loadEnviroment(resource.location(), resource.value(), environmentPaths);
