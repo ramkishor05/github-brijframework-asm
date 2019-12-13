@@ -3,7 +3,7 @@ package org.brijframework.env.impl;
 import java.util.Properties;
 
 import org.brijframework.env.Environment;
-import org.brijframework.support.beans.Bean;
+import org.brijframework.support.bean.Bean;
 import org.brijframework.support.model.Model;
 
 @Model

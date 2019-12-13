@@ -8,7 +8,7 @@ import org.brijframework.container.bootstrap.BootstrapContainer;
 import org.brijframework.context.bootstrap.BootstrapContext;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
-import org.brijframework.support.config.SingletonFactory;
+import org.brijframework.support.factories.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.printer.LoggerConsole;

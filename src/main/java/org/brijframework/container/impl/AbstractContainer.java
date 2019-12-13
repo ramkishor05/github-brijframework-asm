@@ -9,7 +9,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.factories.Factory;
 import org.brijframework.group.Group;
-import org.brijframework.support.config.SingletonFactory;
+import org.brijframework.support.factories.SingletonFactory;
 
 public abstract class AbstractContainer implements DefaultContainer {
 	

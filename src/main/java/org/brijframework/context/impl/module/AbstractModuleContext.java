@@ -10,7 +10,7 @@ import org.brijframework.context.Context;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
 import org.brijframework.context.module.ModuleContext;
-import org.brijframework.support.config.SingletonFactory;
+import org.brijframework.support.factories.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
 import org.brijframework.util.printer.LoggerConsole;

@@ -7,7 +7,7 @@ import org.brijframework.container.Container;
 import org.brijframework.context.Context;
 import org.brijframework.env.Environment;
 import org.brijframework.factories.impl.bootstrap.env.EnvironmentFactory;
-import org.brijframework.support.config.SingletonFactory;
+import org.brijframework.support.factories.SingletonFactory;
 
 public abstract class AbstractContext implements Context{
 
