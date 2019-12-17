@@ -59,7 +59,6 @@ public abstract class AbstractFactory<K,T> implements Factory<K,T> {
 		return getContainer(key);
 	}
 	
-	
 	public Object getEnvProperty(String key) {
 		Container container = getContainer();
 		if(container==null) {

@@ -2,12 +2,15 @@ package org.brijframework.context.impl.bootstrap;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.brijframework.container.bootstrap.BootstrapContainer;
 import org.brijframework.context.bootstrap.BootstrapContext;
 import org.brijframework.context.impl.AbstractContext;
 import org.brijframework.context.impl.Stages;
+import org.brijframework.context.module.ModuleContext;
+import org.brijframework.group.Group;
 import org.brijframework.support.factories.SingletonFactory;
 import org.brijframework.support.util.SupportUtil;
 import org.brijframework.util.asserts.Assertion;
@@ -137,6 +140,21 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 	@Override
 	public void prestart(BootstrapContainer container) {
 		
+	}
+	
+	@Override
+	public ModuleContext getModuleContext(Class<? extends ModuleContext>moduleContextCls){
+		ConcurrentHashMap<Object, BootstrapContainer> containers = this.getContainers();
+		for(Entry<Object, BootstrapContainer> entry:containers.entrySet()) {
+			BootstrapContainer bootstrapContainer = entry.getValue();
+			for(Entry<Object,Group> entryGroup:bootstrapContainer.getCache().entrySet()) {
+				ModuleContext find =entryGroup.getValue().get(moduleContextCls.getSimpleName());
+				if(find!=null) {
+					return find;
+				}
+			}
+		}
+		return null;
 	}
 	
 }
