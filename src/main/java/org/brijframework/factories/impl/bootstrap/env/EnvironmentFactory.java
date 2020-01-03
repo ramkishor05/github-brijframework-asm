@@ -43,18 +43,22 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 		try {
 		LoggerConsole.screen("BootstrapFactory -> "+this.getClass().getSimpleName(), "Lunching the factory for ResourceContext");
 		String environmentLocation = System.getProperty(SupportConstants.APPLICATION_ENVIRONMENT_RESOURCE_PATH_KEY);
-		String environmentFiles = System.getProperty(SupportConstants.APPLICATION_ENVIRONMENT_RESOURCE_FILE_NAMES);
+		String environmentFiles = System.getProperty(SupportConstants.APPLICATION_ENVIRONMENT_RESOURCE_FILES_KEY);
 		List<String> environmentPaths=new ArrayList<String>();
-		if(StringUtil.isNonEmpty(environmentFiles)) {
-			loadEnviroment(environmentLocation, environmentFiles, environmentPaths);
-		}else {
-			ReflectionFactory.getFactory().getClassListFromInternal().forEach(cls->{
+		if(StringUtil.isEmpty(environmentFiles)) {
+			for( Class<?> cls : ReflectionFactory.getFactory().getInternalClassList()){
 				if(cls.isAnnotationPresent(EnvironmentResource.class)) {
 					EnvironmentResource resource=cls.getAnnotation(EnvironmentResource.class);
-					loadEnviroment(resource.location(), resource.value(), environmentPaths);
+					environmentLocation=resource.location();
+					environmentFiles=resource.value();
 				}
-			});
+			};
 		}
+		if(StringUtil.isEmpty(environmentFiles)) {
+			environmentLocation= SupportConstants.APPLICATION_ENVIRONMENT_RESOURCE_PATH_VAL;
+			environmentFiles=SupportConstants.APPLICATION_ENVIRONMENT_RESOURCE_FILE_NAMES;
+		}
+		loadEnviroment(environmentLocation, environmentFiles, environmentPaths);
 		for(String environmentPath:environmentPaths) {
 			try {
 				if(environmentPath.startsWith(prefix_classpath)) {
@@ -73,6 +77,7 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 		LoggerConsole.screen("environment", "Active profile :"+environment.getName());
 		LoggerConsole.screen("BootstrapFactory -> "+this.getClass().getSimpleName(), "Lunched the factory for ResourceContext");
 	} catch (Exception e) {
+		e.printStackTrace();
 		LoggerConsole.screen("BootstrapFactory -> "+this.getClass().getSimpleName(), "Error to lunch the factory for ResourceContext");
 	}
 		return this;
@@ -98,9 +103,9 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 					Properties envProperties = YamlUtil.getEnvProperties(profile);
 					environment(envProperties);
 				}
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -117,6 +122,10 @@ public class EnvironmentFactory extends AbstractBootstrapFactory<String,Environm
 	}
 	
 	private void setActiveProfile() {
+		if(getCache().isEmpty()) {
+			Properties envProperties=new Properties();
+			environment(envProperties);
+		}
 		for (Environment environment : getCache().values()) {
 			String activePrfile=(String) environment.getProperties().get("application.profiles.active");
 			if (activePrfile!=null) {
