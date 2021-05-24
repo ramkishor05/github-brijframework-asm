@@ -142,15 +142,16 @@ public abstract class AbstractBootstrapContext extends AbstractContext implement
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public ModuleContext getModuleContext(Class<? extends ModuleContext>moduleContextCls){
+	public <T>T getContext(Class<T>moduleContextCls){
 		ConcurrentHashMap<Object, BootstrapContainer> containers = this.getContainers();
 		for(Entry<Object, BootstrapContainer> entry:containers.entrySet()) {
 			BootstrapContainer bootstrapContainer = entry.getValue();
 			for(Entry<Object,Group> entryGroup:bootstrapContainer.getCache().entrySet()) {
 				ModuleContext find =entryGroup.getValue().get(moduleContextCls.getSimpleName());
 				if(find!=null) {
-					return find;
+					return (T) find;
 				}
 			}
 		}

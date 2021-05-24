@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.brijframework</groupId>
-	<artifactId>brijframework-asm</artifactId>
+	<groupId>io.github.ramkishor05</groupId>
+	<artifactId>github-brijframework-asm</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
-	<name>org.brijframework-asm</name>
+	<name>io.github.ramkishor05-asm</name>
 	<url>http://maven.apache.org</url>
 
 	<licenses>
@@ -26,7 +26,7 @@
 		</developer>
 	</developers>
 	<scm>
-		<url>https://github.com/ramkishor05/brijframework-api</url>
+		<url>https://github.com/ramkishor05/github-brijframework-api</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,18 +42,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.brijframework</groupId>
-			<artifactId>brijframework-api</artifactId>
+			<groupId>io.github.ramkishor05</groupId>
+			<artifactId>github-brijframework-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.brijframework</groupId>
-			<artifactId>brijframework-util</artifactId>
+			<groupId>io.github.ramkishor05</groupId>
+			<artifactId>github-brijframework-util</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.brijframework</groupId>
-			<artifactId>brijframework-support</artifactId>
+			<groupId>io.github.ramkishor05</groupId>
+			<artifactId>github-brijframework-support</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
