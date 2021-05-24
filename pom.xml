@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.github.ramkishor05</groupId>
+	<groupId>io.github.github-brijframework</groupId>
 	<artifactId>github-brijframework-asm</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>github-brijframework-asm</name>
-	<url>https://github.com/ramkishor05/github-brijframework-asm</url>
+	<url>https://github.com/github-brijframework/github-brijframework-asm</url>
 	<description>This is the basic library of brijframework</description>
 
 	<properties>
@@ -30,15 +30,15 @@
 		<developer>
 			<name>Ram Kishor</name>
 			<email>ramkishor0509@gmail.com</email>
-			<organization>com.github.ramkishor05</organization>
-			<organizationUrl>https://github.com/ramkishor05/github-brijframework-asm</organizationUrl>
+			<organization>com.github.github-brijframework</organization>
+			<organizationUrl>https://github.com/github-brijframework/github-brijframework-asm</organizationUrl>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/ramkishor05/github-brijframework-asm.git</connection>
-		<developerConnection>scm:git:ssh://github.com:ramkishor05/github-brijframework-asm.git</developerConnection>
-		<url>http://github.com/ramkishor05/github-brijframework-asm</url>
+		<connection>scm:git:git://github.com/github-brijframework/github-brijframework-asm.git</connection>
+		<developerConnection>scm:git:ssh://github.com:github-brijframework/github-brijframework-asm.git</developerConnection>
+		<url>http://github.com/github-brijframework/github-brijframework-asm</url>
 	</scm>
 
 	<dependencies>
