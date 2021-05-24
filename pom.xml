@@ -8,31 +8,38 @@
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
-	<name>io.github.ramkishor05-asm</name>
-	<url>http://maven.apache.org</url>
+	<name>github-brijframework-asm</name>
+	<url>https://github.com/ramkishor05/github-brijframework-asm</url>
+	<description>This is the basic library of brijframework</description>
 
-	<licenses>
-		<license>
-			<name>Apache License, Version 2.0</name>
-			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<name>Pivotal</name>
-			<email>info@pivotal.io</email>
-			<organization>Pivotal Software, Inc.</organization>
-			<organizationUrl>https://www.spring.io</organizationUrl>
-		</developer>
-	</developers>
-	<scm>
-		<url>https://github.com/ramkishor05/github-brijframework-api</url>
-	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven-compiler-plugin-version>2.3.2</maven-compiler-plugin-version>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Ram Kishor</name>
+			<email>ramkishor0509@gmail.com</email>
+			<organization>com.github.ramkishor05</organization>
+			<organizationUrl>https://github.com/ramkishor05/github-brijframework-asm</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/ramkishor05/github-brijframework-asm.git</connection>
+		<developerConnection>scm:git:ssh://github.com:ramkishor05/github-brijframework-asm.git</developerConnection>
+		<url>http://github.com/ramkishor05/github-brijframework-asm</url>
+	</scm>
 
 	<dependencies>
 		<dependency>
@@ -41,52 +48,74 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.github.ramkishor05</groupId>
-			<artifactId>github-brijframework-api</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.ramkishor05</groupId>
-			<artifactId>github-brijframework-util</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.ramkishor05</groupId>
-			<artifactId>github-brijframework-support</artifactId>
-			<version>0.0.1</version>
-		</dependency>
 	</dependencies>
-	<repositories>
-	    <repository>
-	        <id>mvn-repo</id>
-	        <url>https://rawgit.com/ramkishor05/artifacts/master</url>
-	        <releases>
-	            <enabled>true</enabled>
-	        </releases>
-	        <snapshots>
-	            <enabled>true</enabled>
-	        </snapshots>
-	    </repository>
-	</repositories>
+
 	<build>
+		<finalName>github-brijframework-asm</finalName>
 		<plugins>
 			<plugin>
-				<groupId>com.github.github</groupId>
-				<artifactId>site-maven-plugin</artifactId>
-				<version>0.12</version>
-				<configuration>
-					<message>Creating site for ${project.version}</message>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
+						<id>attach-sources</id>
 						<goals>
-							<goal>site</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
-						<phase>site</phase>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
 </project>
