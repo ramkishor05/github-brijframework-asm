@@ -29,17 +29,17 @@
 		<dependency>
 			<groupId>io.github.github-brijframework</groupId>
 			<artifactId>github-brijframework-api</artifactId>
-			<version>0.0.1</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.github-brijframework</groupId>
 			<artifactId>github-brijframework-util</artifactId>
-			<version>0.0.1</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.github-brijframework</groupId>
 			<artifactId>github-brijframework-support</artifactId>
-			<version>0.0.1</version>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 	
